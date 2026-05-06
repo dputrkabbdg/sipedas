@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Rekap Kegiatan Bidang Drainase TA 2026</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root{
+      --primary:#1F6366;--primary-dark:#174b4d;--primary-soft:#2b7c80;--bg:#f3f7f8;
+      --card:#fff;--text:#122126;--muted:#61737a;--line:#d9e3e6;--shadow:0 14px 34px rgba(17,40,45,.10);
+      --success:#198754;--warn:#b58105;--danger:#c0392b;--blue:#2563eb;--purple:#7c3aed
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,#f8fbfc 0%,#edf3f5 100%);color:var(--text)}
+    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(20,33,38,.08)}
+    .topbar-inner{max-width:1880px;margin:auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand-logo{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:900;box-shadow:0 12px 24px rgba(31,99,102,.18);overflow:hidden}
+    .brand-logo img{width:100%;height:100%;object-fit:contain}
+    .brand-title{margin:0;font-size:18px;font-weight:900;line-height:1.2;text-transform:uppercase}
+    .brand-subtitle{margin:4px 0 0;font-size:13px;color:#60757b;font-weight:800;text-transform:uppercase}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .chip,.top-link{padding:11px 15px;border-radius:999px;font-size:12px;font-weight:850;white-space:nowrap}
+    .chip{background:#fff;border:1px solid var(--line);color:#38545b}
+    .top-link{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;text-decoration:none;box-shadow:0 10px 24px rgba(31,99,102,.16)}
+    .wrap{max-width:1880px;margin:auto;padding:22px 28px 36px}
+    .hero{position:relative;overflow:hidden;border-radius:30px;background:linear-gradient(135deg,var(--primary-dark),var(--primary) 55%,var(--primary-soft));color:#fff;padding:28px;box-shadow:var(--shadow);margin-bottom:24px}
+    .hero:before{content:"";position:absolute;width:280px;height:280px;right:-70px;top:-90px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .hero-body{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.08fr;gap:24px;align-items:start}
+    .hero h1{margin:0 0 12px;font-size:clamp(32px,4vw,54px);line-height:1.02;font-weight:900;letter-spacing:-.03em}
+    .hero p{margin:0;font-size:17px;line-height:1.7;color:rgba(255,255,255,.94);max-width:780px}
+    .resume-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .resume-card{background:#fff;color:#112126;border-radius:20px;padding:18px;border:1px solid rgba(31,99,102,.12);box-shadow:0 10px 24px rgba(13,34,38,.10);min-height:120px;border-left:8px solid var(--primary)}
+    .resume-card:nth-child(2){border-left-color:#2f8f93}.resume-card:nth-child(3){border-left-color:#2563eb}.resume-card:nth-child(4){border-left-color:#d49110}.resume-card:nth-child(5){border-left-color:#7c3aed}.resume-card:nth-child(6){border-left-color:#c0392b}
+    .resume-label{font-size:14px;font-weight:900;line-height:1.35;color:#29434a;margin-bottom:12px}
+    .resume-value{font-size:34px;line-height:1;font-weight:900;color:var(--primary-dark);letter-spacing:-.02em}
+    .resume-sub{margin-top:8px;font-size:12px;color:#64777d;font-weight:700;line-height:1.45}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+    .stat-card{position:relative;overflow:hidden;border-radius:24px;padding:18px;min-height:140px;color:#fff;box-shadow:var(--shadow)}
+    .stat-card:before{content:"";position:absolute;width:140px;height:140px;right:-45px;bottom:-55px;border-radius:50%;background:rgba(255,255,255,.11)}
+    .stat-total{background:linear-gradient(135deg,#264347,#47666b)}.stat-1{background:linear-gradient(135deg,#1f6366,#2f8f93)}.stat-2{background:linear-gradient(135deg,#2563eb,#60a5fa)}.stat-3{background:linear-gradient(135deg,#7c3aed,#a78bfa)}.stat-4{background:linear-gradient(135deg,#a36a00,#d99912)}
+    .stat-label{position:relative;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;line-height:1.35;margin-bottom:12px}
+    .stat-value{position:relative;font-size:42px;font-weight:900;line-height:1;margin-bottom:10px}
+    .stat-desc{position:relative;font-size:13px;font-weight:650;line-height:1.5;opacity:.96}
+    .login-card,.panel,.map-side{background:#fff;border:1px solid rgba(20,33,38,.07);border-radius:24px;box-shadow:var(--shadow)}
+    .login-card{display:flex;gap:12px;align-items:end;flex-wrap:wrap;padding:16px;margin-bottom:18px}
+    .login-field{min-width:180px;flex:1}.auth-status{font-size:13px;font-weight:900;color:#31545a;min-width:220px}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.tab{border:1px solid var(--line);border-radius:999px;padding:12px 18px;background:#fff;color:#24454b;font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-color:transparent}
+    .view{display:none}.view.active{display:block}.admin-only{display:none!important}body.admin-mode .admin-only{display:initial!important}body.admin-mode section.admin-only{display:block!important}body.admin-mode button.admin-only{display:inline-flex!important}
+    .panel{overflow:hidden}.panel-body{padding:24px}.panel h2,.map-side h2{margin:0 0 10px;font-size:24px;font-weight:900;color:#173238}.panel p,.map-side p{margin:0 0 20px;color:#62757b;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:8px;font-size:13px;font-weight:800;color:#1d3136}
+    input,select,textarea{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #d5e0e3;background:#fff;font:inherit;color:#142126}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary-soft);box-shadow:0 0 0 4px rgba(31,99,102,.12)}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}button{border:none;border-radius:14px;padding:12px 16px;font:inherit;font-weight:850;cursor:pointer}button:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff}.btn-light{background:#fff;color:#142126;border:1px solid #d5e0e3}.btn-green{background:linear-gradient(135deg,#198754,#2bb673);color:#fff}.btn-danger{background:#c0392b;color:#fff}
+    .status{margin-top:12px;font-size:14px;font-weight:800;min-height:22px}.ok{color:var(--success)}.warn{color:var(--warn)}.err{color:var(--danger)}
+    .toolbar{display:grid;grid-template-columns:1.4fr repeat(4,.75fr) auto;gap:12px;margin-bottom:14px}
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid #e1e9ec;background:#fff}table{width:100%;min-width:1100px;border-collapse:collapse;font-size:13px}th,td{padding:12px;border-bottom:1px solid #eef3f5;text-align:left;vertical-align:top}th{font-size:11px;text-transform:uppercase;color:#61757b;font-weight:900;letter-spacing:.04em;background:#f6f9fa;position:sticky;top:0;z-index:1}tbody tr:hover{background:#f8fbfb}
+    .tag{display:inline-flex;padding:6px 11px;border-radius:999px;background:#edf7f7;color:#1f6366;font-size:12px;font-weight:800;white-space:nowrap}.small-btn{padding:8px 10px;border-radius:10px;font-size:12px}
+    .map-layout{display:grid;grid-template-columns:360px 1fr;gap:20px}.map-side{padding:18px}#map{height:760px;width:100%;border-radius:24px;box-shadow:var(--shadow);border:1px solid rgba(20,33,38,.08);overflow:hidden}
+    .map-tools{margin-top:14px;padding:14px;border-radius:18px;background:#f8fbfb;border:1px solid #e1e9ec}.statline{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+    .invalid-box{max-height:245px;overflow:auto;border:1px solid #e1e9ec;border-radius:14px;padding:10px;background:#fbfdfd}.invalid-item{font-size:12px;border-bottom:1px solid #edf2f4;padding:8px 2px}.invalid-item:last-child{border-bottom:0}
+    .popup-title{font-weight:900;font-size:14px;color:#173238;margin-bottom:6px}.popup-row{font-size:12px;margin:4px 0}.popup-link{display:inline-block;margin-top:8px;color:#1f6366;font-weight:900;text-decoration:none}
+    .loader{display:none;position:fixed;inset:0;background:rgba(15,23,42,.28);align-items:center;justify-content:center;z-index:9999}.loader.active{display:flex}.loader-box{background:#fff;padding:18px 22px;border-radius:18px;box-shadow:var(--shadow);font-weight:800}
+    .pagination-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px;background:#f8fbfb;border:1px solid #e1e9ec;border-radius:16px}.pagination-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.page-size-select{width:auto;min-width:100px;padding:9px 12px;border-radius:10px}
+    @media(max-width:1400px){.hero-body,.map-layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.resume-board{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.topbar-inner,.wrap{padding-left:16px;padding-right:16px}.hero{padding:20px}.hero h1{font-size:28px}.resume-board,.stats,.grid,.toolbar{grid-template-columns:1fr}#map{height:540px}button{width:100%}.btns{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo"><img src="logo.png" onerror="this.style.display='none';this.parentElement.textContent='D'" alt="Logo" /></div>
+        <div>
+          <h1 class="brand-title">DPUTR Kabupaten Bandung</h1>
+          <p class="brand-subtitle">Dashboard Rekap Kegiatan Bidang Drainase TA 2026</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <a id="dbLink" class="top-link" href="https://docs.google.com/spreadsheets/d/1aSz1pfuU9LSH18oW6KknLPxQw84LIims-NO7z11fbN0/edit?gid=1671964925#gid=1671964925" target="_blank" rel="noopener">Akses Database</a>
+        <span class="chip" id="authChip">Mode Publik</span>
+        <span class="chip">Peta + Line Aktif</span>
+        <span class="chip" id="topLastUpdate">Update: -</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loader" id="loader"><div class="loader-box">Memproses data...</div></div>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-body">
+        <div>
+          <h1>Monitoring Progress Kegiatan Drainase</h1>
+          <p>Dashboard ini membaca data dari sheet <b>Fisik 2026</b>, menampilkan resume paket, status pelaksanaan, pagu kegiatan, titik koordinat awal/akhir, serta garis trase pekerjaan pada peta.</p>
+        </div>
+        <div class="resume-board" id="resumeCards"></div>
+      </div>
+    </section>
+
+    <section class="stats" id="statsWrap"></section>
+
+    <section class="login-card">
+      <div class="login-field"><label>Username Admin</label><input id="loginUsername" autocomplete="username" placeholder="Username" /></div>
+      <div class="login-field"><label>Password Admin</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" /></div>
+      <button class="btn-primary" id="loginBtn" type="button" onclick="loginAdmin()">Sign In Admin</button>
+      <button class="btn-light admin-only" id="logoutBtn" type="button" onclick="logoutAdmin()">Logout</button>
+      <div class="auth-status" id="authStatus">Mode publik: dashboard dan peta bisa dilihat, CRUD terkunci.</div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab admin-only" data-view="inputView">Input / Edit</button>
+      <button class="tab admin-only" data-view="dataView">Data CRUD</button>
+      <button class="tab active" data-view="mapView">Peta Kegiatan</button>
+    </div>
+
+    <section id="inputView" class="view admin-only">
+      <div class="panel">
+        <div class="panel-body">
+          <h2 id="formTitle">Form Input / Edit Kegiatan Fisik 2026</h2>
+          <p>Data validation/dropdown mengikuti aturan di Spreadsheet. Saat data baru ditambahkan, validasi dari baris 2 akan otomatis disalin ke baris baru.</p>
+          <form id="formInput">
+            <input type="hidden" id="no" />
+            <div class="grid">
+              <div class="full"><label>Nama Kegiatan</label><input id="namaKegiatan" required placeholder="Masukkan nama kegiatan" /></div>
+              <div><label>Pagu (Rp)</label><input id="pagu" placeholder="Contoh: Rp125,000,000" /></div>
+              <div><label>Program</label><select id="program"></select></div>
+              <div><label>Kecamatan</label><input id="kecamatan" list="listKecamatan" placeholder="Masukkan Kecamatan" /><datalist id="listKecamatan"></datalist></div>
+              <div><label>Desa</label><input id="desa" list="listDesa" placeholder="Masukkan Desa" /><datalist id="listDesa"></datalist></div>
+              <div><label>Sumber Dana</label><select id="sumberDana"></select></div>
+              <div><label>Asal Usulan</label><select id="asalUsulan"></select></div>
+              <div><label>Status</label><select id="status"></select></div>
+              <div><label>Korwil</label><select id="korwil"></select></div>
+              <div><label>Tahap</label><select id="tahap"></select></div>
+              <div><label>Ket Tambahan</label><input id="ketTambahan" placeholder="Contoh: TW1" /></div>
+              <div class="full">
+                <label>Titik Koordinat Awal</label>
+                <input id="titikAwal" placeholder="-6.955120, 107.564728 atau 7°38'18.1&quot;S 108°01'17.6&quot;E" />
+                <div class="coord-actions">
+                  <button type="button" class="btn-green" onclick="ambilKoordinat('titikAwal')">Ambil Koordinat Awal dari Lokasi Saya</button>
+                </div>
+              </div>
+              <div class="full">
+                <label>Titik Koordinat Akhir</label>
+                <input id="titikAkhir" placeholder="-6.956000, 107.565000" />
+                <div class="coord-actions">
+                  <button type="button" class="btn-green" onclick="ambilKoordinat('titikAkhir')">Ambil Koordinat Akhir dari Lokasi Saya</button>
+                </div>
+              </div>
+              <div class="full"><label>Volume dan Konstruksi Pekerjaan</label><textarea id="volumeKonstruksi" rows="3" placeholder="Contoh: Saluran U-Ditch 30x30 ..."></textarea></div>
+              <div class="full">
+                <label>Foto Kegiatan</label>
+                <input id="foto" placeholder="Link Drive lama/manual akan tetap bisa dipakai" />
+                <div class="file-note">Foto bisa upload lebih dari 1 file</div>
+                <input id="fotoFiles" type="file" accept="image/*" multiple />
+                <div class="preview-list" id="previewList"></div>
+              </div>
+            </div>
+            <div class="btns">
+              <button type="submit" class="btn-primary" id="submitBtn">Simpan Data</button>
+              <button type="button" class="btn-light" onclick="resetForm()">Reset</button>
+            </div>
+            <div class="status" id="statusBox"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="dataView" class="view admin-only">
+      <div class="panel">
+        <div class="panel-body">
+          <h2>Data CRUD Kegiatan</h2>
+          <p>Gunakan pencarian dan filter untuk mencari data. Tombol Edit memindahkan data ke form input.</p>
+          <div class="toolbar">
+            <input id="searchInput" placeholder="Cari kegiatan / kecamatan / desa / status / korwil" />
+            <select id="filterStatus"><option value="">Semua Status</option></select>
+            <select id="filterKecamatan"><option value="">Semua Kecamatan</option></select>
+            <select id="filterKorwil"><option value="">Semua Korwil</option></select>
+            <select id="filterTahap"><option value="">Semua Tahap</option></select>
+            <button class="btn-primary" onclick="loadRecords()">Terapkan</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Aksi</th><th>No</th><th>Nama Kegiatan</th><th>Pagu</th><th>Kecamatan</th><th>Desa</th><th>Status</th><th>Korwil</th><th>Tahap</th><th>Koordinat Awal/Akhir</th></tr></thead>
+              <tbody id="recordsBody"><tr><td colspan="10">Memuat...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination-bar">
+            <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
+            <div class="pagination-controls">
+              <label style="margin:0;font-size:12px">Per halaman</label>
+              <select id="pageSize" class="page-size-select" onchange="changePageSize()"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select>
+              <button class="btn-light" type="button" onclick="goFirstPage()">Awal</button>
+              <button class="btn-light" type="button" onclick="prevPage()">Sebelumnya</button>
+              <span class="tag" id="pageIndicator">Halaman 1 / 1</span>
+              <button class="btn-light" type="button" onclick="nextPage()">Berikutnya</button>
+              <button class="btn-light" type="button" onclick="goLastPage()">Akhir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mapView" class="view active">
+      <div class="map-layout">
+        <aside class="map-side">
+          <h2>Peta Kegiatan</h2>
+          <p>Marker tampil untuk titik awal/akhir yang valid. Jika titik awal dan akhir terisi, aplikasi membuat line penghubung otomatis.</p>
+
+          <label>Filter Status</label><select id="mapFilterStatus"><option value="">Semua Status</option></select><br><br>
+          <label>Filter Kecamatan</label><select id="mapFilterKecamatan"><option value="">Semua Kecamatan</option></select><br><br>
+          <label>Filter Korwil</label><select id="mapFilterKorwil"><option value="">Semua Korwil</option></select><br><br>
+          <label>Filter Tahap</label><select id="mapFilterTahap"><option value="">Semua Tahap</option></select>
+
+          <div class="map-tools">
+            <label>Tampilan Basemap</label>
+            <select id="basemapSelect" onchange="changeBasemap()">
+              <option value="osm">OpenStreetMap Default</option>
+              <option value="osmHot">OpenStreetMap HOT</option>
+              <option value="topo">OpenTopoMap</option>
+              <option value="esriStreets">Esri Streets</option>
+              <option value="esriImagery">Esri Satellite / Imagery</option>
+              <option value="cartoLight">Carto Light</option>
+              <option value="cartoDark">Carto Dark</option>
+            </select>
+          </div>
+
+          <div class="btns">
+            <button class="btn-primary" onclick="loadMapData()">Refresh Peta</button>
+            <button class="btn-light" onclick="fitMap()">Zoom Semua Titik</button>
+            <button class="btn-green" onclick="downloadKMZ()">Download KMZ</button>
+          </div>
+
+          <div class="statline">
+            <span class="tag" id="mapMapped">Data berpeta: 0</span>
+            <span class="tag" id="mapLines">Line: 0</span>
+            <span class="tag" id="mapInvalid">Invalid: 0</span>
+          </div>
+          <div class="status" id="kmzStatus">KMZ mengikuti filter peta yang sedang aktif.</div>
+
+          <h3>Koordinat Belum Valid</h3>
+          <div class="invalid-box" id="invalidList">-</div>
+        </aside>
+        <div id="map"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycby2m7yo1ln08jwaVTT-DEqJBY4CmCFZIX7iGH1m7_mX19yurVwZhTPI5ktGQ1JFMJzx/exec";
+    const AUTO_REFRESH_MS = 15000;
+
+    let map, baseLayer, markerLayer, lineLayer, lastBounds = null;
+    let lastMapFeatures = [];
+    let selectedPhotos = [];
+    let adminToken = localStorage.getItem("drainase_admin_token") || "";
+    let allCrudRecords = [], currentPage = 1, pageSize = 25;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initTabs();
+      applyAuthMode(false);
+      checkAdminSession();
+      loadInitData();
+      setTimeout(() => { initMap(); loadMapData(false); }, 350);
+
+      document.getElementById("formInput").addEventListener("submit", submitForm);
+      document.getElementById("fotoFiles").addEventListener("change", handlePhotoChange);
+      document.getElementById("searchInput").addEventListener("keydown", e => { if (e.key === "Enter") loadRecords(); });
+
+      ["mapFilterStatus","mapFilterKecamatan","mapFilterKorwil","mapFilterTahap"].forEach(id => {
+        document.getElementById(id).addEventListener("change", () => loadMapData());
+      });
+
+      setInterval(() => {
+        loadDashboard();
+        if (isAdmin()) loadRecords(false);
+        if (document.getElementById("mapView").classList.contains("active")) loadMapData(false);
+      }, AUTO_REFRESH_MS);
+    });
+
+    function initTabs(){
+      document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.view).classList.add("active");
+        if (btn.dataset.view === "mapView") setTimeout(() => { initMap(); map.invalidateSize(); }, 150);
+      }));
+    }
+
+    function showLoader(show=true){ document.getElementById("loader").classList.toggle("active", show); }
+    function setStatus(msg,type="ok"){ const box=document.getElementById("statusBox"); box.className="status "+type; box.textContent=msg||""; }
+
+    async function apiGet(action, params={}){
+      if (API_URL.includes("GANTI_DENGAN")) throw new Error("API_URL belum diganti dengan URL Web App Apps Script.");
+      const qs = new URLSearchParams(Object.assign({ action }, params));
+      const res = await fetch(`${API_URL}?${qs.toString()}`);
+      return await res.json();
+    }
+    async function apiPost(payload){
+      if (API_URL.includes("GANTI_DENGAN")) throw new Error("API_URL belum diganti dengan URL Web App Apps Script.");
+      const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify(payload) });
+      return await res.json();
+    }
+
+    function isAdmin(){ return !!adminToken; }
+    function setAuthStatus(msg,type=""){ const el=document.getElementById("authStatus"); el.textContent=msg; el.className="auth-status "+type; }
+    function applyAuthMode(admin){
+      document.body.classList.toggle("admin-mode", !!admin);
+      document.getElementById("authChip").textContent = admin ? "Mode Admin Aktif" : "Mode Publik";
+      document.getElementById("loginBtn").style.display = admin ? "none" : "inline-flex";
+      document.getElementById("loginUsername").disabled = !!admin;
+      document.getElementById("loginPassword").disabled = !!admin;
+      if (!admin) {
+        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        document.querySelector('[data-view="mapView"]').classList.add("active");
+        document.getElementById("mapView").classList.add("active");
+      }
+    }
+
+    async function checkAdminSession(){
+      if (!adminToken) return applyAuthMode(false);
+      try{
+        const data = await apiPost({ action:"checkSession", token:adminToken });
+        if (data.success && data.isAdmin){ applyAuthMode(true); setAuthStatus("Login sebagai admin: "+(data.username||"admin"),"ok"); loadRecords(false); }
+        else { adminToken=""; localStorage.removeItem("drainase_admin_token"); applyAuthMode(false); }
+      }catch(err){ applyAuthMode(false); }
+    }
+
+    async function loginAdmin(){
+      const username = val("loginUsername"), password = val("loginPassword");
+      if (!username || !password) return setAuthStatus("Username dan password wajib diisi.","err");
+      showLoader(true);
+      try{
+        const data = await apiPost({ action:"login", username, password });
+        if (!data.success) throw new Error(data.message || "Login gagal.");
+        adminToken = data.token; localStorage.setItem("drainase_admin_token", adminToken);
+        applyAuthMode(true); setAuthStatus("Login berhasil. Fitur CRUD sudah aktif.","ok");
+        document.querySelector('[data-view="inputView"]').click(); loadRecords(false);
+      }catch(err){ adminToken=""; localStorage.removeItem("drainase_admin_token"); applyAuthMode(false); setAuthStatus(err.message,"err"); }
+      finally{ showLoader(false); }
+    }
+
+    async function logoutAdmin(){
+      try{ if (adminToken) await apiPost({ action:"logout", token:adminToken }); }catch(err){}
+      adminToken=""; localStorage.removeItem("drainase_admin_token"); document.getElementById("loginPassword").value="";
+      applyAuthMode(false); setAuthStatus("Logout berhasil. Sekarang kembali ke mode publik.","ok");
+    }
+
+    async function loadInitData(){
+      showLoader(true);
+      try{
+        const data = await apiGet("getInitData");
+        if (!data.success) throw new Error(data.message || "Gagal memuat data awal.");
+        document.getElementById("dbLink").href = data.databaseUrl || document.getElementById("dbLink").href;
+
+        fillSelect("sumberDana", data.dropdowns.sumberDana || [], "Pilih Sumber Dana");
+        fillSelect("asalUsulan", data.dropdowns.asalUsulan || [], "Pilih Asal Usulan");
+        fillSelect("status", data.dropdowns.status || [], "Pilih Status");
+        fillSelect("korwil", data.dropdowns.korwil || [], "Pilih Korwil");
+        fillSelect("tahap", data.dropdowns.tahap || [], "Pilih Tahap");
+        fillSelect("program", data.dropdowns.program || [], "Pilih Program");
+
+        fillFilter("filterStatus", data.dropdowns.status || [], "Semua Status");
+        fillFilter("filterKecamatan", data.dropdowns.kecamatan || [], "Semua Kecamatan");
+        fillFilter("filterKorwil", data.dropdowns.korwil || [], "Semua Korwil");
+        fillFilter("filterTahap", data.dropdowns.tahap || [], "Semua Tahap");
+
+        fillFilter("mapFilterStatus", data.dropdowns.status || [], "Semua Status");
+        fillFilter("mapFilterKecamatan", data.dropdowns.kecamatan || [], "Semua Kecamatan");
+        fillFilter("mapFilterKorwil", data.dropdowns.korwil || [], "Semua Korwil");
+        fillFilter("mapFilterTahap", data.dropdowns.tahap || [], "Semua Tahap");
+
+        document.getElementById("listKecamatan").innerHTML = (data.dropdowns.kecamatan||[]).map(v=>`<option value="${escapeAttr(v)}">`).join("");
+        document.getElementById("listDesa").innerHTML = (data.dropdowns.desa||[]).map(v=>`<option value="${escapeAttr(v)}">`).join("");
+
+        renderDashboard(data.dashboard);
+        if (isAdmin()) renderRecords(data.records || []);
+        setStatus("Aplikasi siap digunakan.","ok");
+      }catch(err){ setStatus(err.message,"err"); }
+      finally{ showLoader(false); }
+    }
+
+    async function loadDashboard(){ try{ const data = await apiGet("getDashboard"); if(data.success) renderDashboard(data); }catch(err){} }
+
+    function renderDashboard(data){
+      renderResumeCards(data);
+      renderStats(data);
+      const updateText = "Update: " + (data.lastUpdate || "-");
+      document.getElementById("topLastUpdate").textContent = updateText;
+    }
+
+    function renderResumeCards(data){
+      const cards = [
+        ["Jumlah Paket", formatNumber(data.totalPaket||0), "Jumlah baris/nama kegiatan yang tercatat"],
+        ["Total Pagu", formatRupiah(data.totalPagu||0), "Akumulasi pagu seluruh paket"],
+        ["Line Trase Valid", formatNumber(data.lineValid||0), "Titik awal dan akhir sama-sama terisi valid"],
+        ["Titik Awal Valid", formatNumber(data.titikAwalValid||0), "Paket dengan koordinat awal valid"],
+        ["Titik Akhir Valid", formatNumber(data.titikAkhirValid||0), "Paket dengan koordinat akhir valid"],
+        ["Koordinat Belum Valid", formatNumber(data.invalidKoordinat||0), "Belum ada titik awal maupun akhir valid"]
+      ];
+      document.getElementById("resumeCards").innerHTML = cards.map(c =>
+        `<div class="resume-card"><div class="resume-label">${c[0]}</div><div class="resume-value">${c[1]}</div><div class="resume-sub">${c[2]}</div></div>`
+      ).join("");
+    }
+
+    function renderStats(data){
+      const statsWrap = document.getElementById("statsWrap");
+      const cards = [
+        {label:"Jumlah Paket", value:data.totalPaket||0, money:data.totalPagu||0, desc:"Total kegiatan fisik 2026", cls:"stat-total"}
+      ];
+
+      const byStatus = data.byStatus || {};
+      const byStatusPagu = data.byStatusPagu || {};
+      Object.keys(byStatus).sort((a,b)=>a.localeCompare(b,"id")).forEach((status,i)=>{
+        cards.push({
+          label: status,
+          value: byStatus[status] || 0,
+          money: byStatusPagu[status] || 0,
+          desc: "Jumlah paket dan total pagu berdasarkan status",
+          cls: `stat-${(i%4)+1}`
+        });
+      });
+
+      statsWrap.innerHTML = cards.map(card =>
+        `<div class="stat-card ${card.cls}">
+          <div class="stat-label">${escapeHtml(card.label)}</div>
+          <div class="stat-value">${formatNumber(card.value)}</div>
+          <div class="stat-money">${formatRupiah(card.money || 0)}</div>
+          <div class="stat-desc">${escapeHtml(card.desc)}</div>
+        </div>`
+      ).join("");
+    }
+
+    function formPayload(){
+      return {
+        token: adminToken,
+        no: val("no"),
+        namaKegiatan: val("namaKegiatan"),
+        pagu: val("pagu"),
+        kecamatan: val("kecamatan"),
+        desa: val("desa"),
+        sumberDana: val("sumberDana"),
+        asalUsulan: val("asalUsulan"),
+        status: val("status"),
+        korwil: val("korwil"),
+        tahap: val("tahap"),
+        ketTambahan: val("ketTambahan"),
+        titikAwal: val("titikAwal"),
+        titikAkhir: val("titikAkhir"),
+        volumeKonstruksi: val("volumeKonstruksi"),
+        foto: val("foto"),
+        program: val("program"),
+        photos: selectedPhotos
+      };
+    }
+
+    async function submitForm(e){
+      e.preventDefault();
+      if (!isAdmin()) return setStatus("Silakan login admin dulu.","err");
+      const payload = formPayload();
+      payload.action = payload.no ? "update" : "create";
+      showLoader(true);
+      try{
+        const data = await apiPost(payload);
+        if (!data.success) throw new Error(data.message || "Gagal menyimpan data.");
+        setStatus(data.message,"ok"); resetForm(); renderDashboard(data.dashboard); loadRecords(false); loadMapData(false);
+      }catch(err){ setStatus(err.message,"err"); }
+      finally{ showLoader(false); }
+    }
+
+    async function loadRecords(show=true){
+      if (!isAdmin()) return;
+      if (show) showLoader(true);
+      try{
+        const data = await apiGet("listRecords", {
+          q: val("searchInput"),
+          status: val("filterStatus"),
+          kecamatan: val("filterKecamatan"),
+          korwil: val("filterKorwil"),
+          tahap: val("filterTahap"),
+          limit: 5000
+        });
+        if (!data.success) throw new Error(data.message || "Gagal memuat data.");
+        allCrudRecords = data.records || [];
+        currentPage = 1;
+        renderRecordsPage();
+      }catch(err){ document.getElementById("recordsBody").innerHTML = `<tr><td colspan="10">${escapeHtml(err.message)}</td></tr>`; }
+      finally{ if(show) showLoader(false); }
+    }
+
+    function renderRecordsPage(){
+      const total = allCrudRecords.length;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * pageSize;
+      const pageRows = allCrudRecords.slice(start, start + pageSize);
+      document.getElementById("recordsBody").innerHTML = pageRows.length ? pageRows.map(r => `
+        <tr>
+          <td><button class="small-btn btn-primary" onclick="editRecord('${escapeAttr(r.no)}')">Edit</button> <button class="small-btn btn-danger" onclick="deleteRecord('${escapeAttr(r.no)}')">Hapus</button></td>
+          <td>${escapeHtml(r.no)}</td><td>${escapeHtml(r.namaKegiatan)}</td><td>${escapeHtml(r.pagu)}</td><td>${escapeHtml(r.kecamatan)}</td><td>${escapeHtml(r.desa)}</td>
+          <td><span class="tag">${escapeHtml(r.status)}</span></td><td>${escapeHtml(r.korwil)}</td><td>${escapeHtml(r.tahap)}</td>
+          <td><b>Awal:</b> ${escapeHtml(r.titikAwal)}<br><b>Akhir:</b> ${escapeHtml(r.titikAkhir)}</td>
+        </tr>`).join("") : `<tr><td colspan="10">Tidak ada data.</td></tr>`;
+      document.getElementById("paginationInfo").textContent = `Menampilkan ${total ? start+1 : 0}-${Math.min(start+pageSize,total)} dari ${total} data`;
+      document.getElementById("pageIndicator").textContent = `Halaman ${currentPage} / ${totalPages}`;
+    }
+
+    function changePageSize(){ pageSize=parseInt(document.getElementById("pageSize").value,10)||25; currentPage=1; renderRecordsPage(); }
+    function goFirstPage(){ currentPage=1; renderRecordsPage(); }
+    function prevPage(){ currentPage=Math.max(1,currentPage-1); renderRecordsPage(); }
+    function nextPage(){ currentPage=Math.min(Math.max(1,Math.ceil(allCrudRecords.length/pageSize)),currentPage+1); renderRecordsPage(); }
+    function goLastPage(){ currentPage=Math.max(1,Math.ceil(allCrudRecords.length/pageSize)); renderRecordsPage(); }
+
+    async function editRecord(no){
+      showLoader(true);
+      try{
+        const data = await apiGet("getRecord", { no });
+        if (!data.success) throw new Error(data.message || "Data tidak ditemukan.");
+        const r = data.record;
+        setVal("no", r.no); setVal("namaKegiatan", r.namaKegiatan); setVal("pagu", r.pagu); setVal("kecamatan", r.kecamatan); setVal("desa", r.desa);
+        setVal("sumberDana", r.sumberDana); setVal("asalUsulan", r.asalUsulan); setVal("status", r.status); setVal("korwil", r.korwil); setVal("tahap", r.tahap);
+        setVal("ketTambahan", r.ketTambahan); setVal("titikAwal", r.titikAwal); setVal("titikAkhir", r.titikAkhir); setVal("volumeKonstruksi", r.volumeKonstruksi);
+        setVal("foto", r.foto); setVal("program", r.program);
+        document.getElementById("formTitle").textContent = "Edit Data No. " + r.no;
+        document.querySelector('[data-view="inputView"]').click();
+        setStatus("Mode edit aktif.","ok");
+      }catch(err){ alert(err.message); }
+      finally{ showLoader(false); }
+    }
+
+    async function deleteRecord(no){
+      if (!confirm("Yakin ingin menghapus data No. "+no+"?")) return;
+      showLoader(true);
+      try{
+        const data = await apiPost({ action:"delete", token:adminToken, no });
+        if (!data.success) throw new Error(data.message || "Gagal hapus data.");
+        renderDashboard(data.dashboard); loadRecords(false); loadMapData(false);
+      }catch(err){ alert(err.message); }
+      finally{ showLoader(false); }
+    }
+
+
+    function ambilKoordinat(targetId){
+      if (!navigator.geolocation) {
+        setStatus("Browser/perangkat tidak mendukung GPS/geolocation.", "err");
+        return;
+      }
+      setStatus("Mengambil koordinat lokasi saat ini... Pastikan izin lokasi diizinkan.", "warn");
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const acc = pos.coords.accuracy ? ` | akurasi ±${Math.round(pos.coords.accuracy)} m` : "";
+        setVal(targetId, `${lat.toFixed(7)}, ${lng.toFixed(7)}`);
+        setStatus(`Koordinat berhasil diambil untuk ${targetId === "titikAwal" ? "titik awal" : "titik akhir"}${acc}.`, "ok");
+      }, err => {
+        let msg = "Gagal mengambil koordinat.";
+        if (err.code === 1) msg = "Izin lokasi ditolak. Aktifkan permission lokasi/GPS untuk browser ini.";
+        if (err.code === 2) msg = "Lokasi tidak tersedia. Pastikan GPS/Location aktif.";
+        if (err.code === 3) msg = "Waktu pengambilan lokasi habis. Coba lagi di area sinyal yang lebih baik.";
+        setStatus(msg, "err");
+      }, { enableHighAccuracy:true, timeout:20000, maximumAge:0 });
+    }
+
+    async function handlePhotoChange(e){
+      const files = Array.from(e.target.files || []);
+      selectedPhotos = [];
+      const preview = document.getElementById("previewList");
+      preview.innerHTML = "";
+      if (!files.length) return;
+      const maxFiles = 10;
+      const maxSizeMb = 8;
+      for (const file of files.slice(0, maxFiles)) {
+        if (!file.type.startsWith("image/")) continue;
+        if (file.size > maxSizeMb * 1024 * 1024) {
+          setStatus(`Foto ${file.name} lebih dari ${maxSizeMb} MB, tidak dimasukkan.`, "warn");
+          continue;
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        selectedPhotos.push({ name:file.name, type:file.type, size:file.size, dataUrl });
+        const div = document.createElement("div");
+        div.className = "preview-item";
+        div.innerHTML = `<img src="${dataUrl}" alt="${escapeAttr(file.name)}"><div class="preview-name">${escapeHtml(file.name)}</div>`;
+        preview.appendChild(div);
+      }
+      if (files.length > maxFiles) setStatus(`Maksimal ${maxFiles} foto per sekali simpan. Foto selebihnya diabaikan.`, "warn");
+      else setStatus(`${selectedPhotos.length} foto siap diupload saat data disimpan.`, "ok");
+    }
+
+    function readFileAsDataUrl(file){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Gagal membaca file foto."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function resetForm(){
+      document.getElementById("formInput").reset();
+      setVal("no","");
+      selectedPhotos = [];
+      document.getElementById("previewList").innerHTML = "";
+      document.getElementById("formTitle").textContent = "Form Input / Edit Kegiatan Fisik 2026";
+      setStatus("");
+    }
+
+    function initMap(){
+      if (map) return;
+      const savedBase = localStorage.getItem("drainase_basemap") || "osm";
+      document.getElementById("basemapSelect").value = savedBase;
+      map = L.map("map", { center:[-7.02,107.58], zoom:11, preferCanvas:true });
+      baseLayer = createBaseLayer(savedBase).addTo(map);
+      lineLayer = L.layerGroup().addTo(map);
+      markerLayer = L.layerGroup().addTo(map);
+    }
+
+    function createBaseLayer(type){
+      const layers = {
+        osm:{url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",opt:{maxZoom:22,attribution:"&copy; OpenStreetMap"}},
+        osmHot:{url:"https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",opt:{maxZoom:22,attribution:"&copy; OpenStreetMap HOT"}},
+        topo:{url:"https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",opt:{maxZoom:17,attribution:"&copy; OpenTopoMap"}},
+        esriStreets:{url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",opt:{maxZoom:22,attribution:"Tiles &copy; Esri"}},
+        esriImagery:{url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",opt:{maxZoom:22,attribution:"Tiles &copy; Esri"}},
+        cartoLight:{url:"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",opt:{maxZoom:22,attribution:"&copy; OpenStreetMap &copy; CARTO"}},
+        cartoDark:{url:"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",opt:{maxZoom:22,attribution:"&copy; OpenStreetMap &copy; CARTO"}}
+      };
+      const cfg = layers[type] || layers.osm;
+      return L.tileLayer(cfg.url, cfg.opt);
+    }
+
+    function changeBasemap(){
+      if (!map) return;
+      const type = document.getElementById("basemapSelect").value || "osm";
+      localStorage.setItem("drainase_basemap", type);
+      if (baseLayer) map.removeLayer(baseLayer);
+      baseLayer = createBaseLayer(type).addTo(map);
+    }
+
+    async function loadMapData(show=true){
+      if (!map) return;
+      if (show) showLoader(true);
+      try{
+        const data = await apiGet("getMapData", {
+          status: val("mapFilterStatus"),
+          kecamatan: val("mapFilterKecamatan"),
+          korwil: val("mapFilterKorwil"),
+          tahap: val("mapFilterTahap")
+        });
+        if (!data.success) throw new Error(data.message || "Gagal memuat peta.");
+        lastMapFeatures = data.features || [];
+
+        markerLayer.clearLayers();
+        lineLayer.clearLayers();
+        const bounds = [];
+
+        (data.features || []).forEach(f => {
+          const popup = popupHtml(f);
+
+          if (f.awal) {
+            const mAwal = L.circleMarker([f.awal.lat, f.awal.lng], { radius:7, weight:3, fillOpacity:.9 }).bindPopup(popup);
+            mAwal.addTo(markerLayer); bounds.push([f.awal.lat, f.awal.lng]);
+          }
+
+          if (f.akhir) {
+            const mAkhir = L.circleMarker([f.akhir.lat, f.akhir.lng], { radius:6, weight:2, fillOpacity:.65 }).bindPopup(popup);
+            mAkhir.addTo(markerLayer); bounds.push([f.akhir.lat, f.akhir.lng]);
+          }
+
+          if (f.awal && f.akhir) {
+            const line = L.polyline([[f.awal.lat, f.awal.lng], [f.akhir.lat, f.akhir.lng]], { weight:5, opacity:.78 }).bindPopup(popup);
+            line.addTo(lineLayer);
+          }
+        });
+
+        renderInvalid(data.invalidCoordinates || []);
+        document.getElementById("mapMapped").textContent = "Data berpeta: " + formatNumber(data.mapped || 0);
+        document.getElementById("mapLines").textContent = "Line: " + formatNumber(data.lineCount || 0);
+        document.getElementById("mapInvalid").textContent = "Invalid: " + formatNumber(data.invalid || 0);
+
+        if (bounds.length) lastBounds = L.latLngBounds(bounds);
+        if (bounds.length && !localStorage.getItem("drainase_map_view_set")) {
+          fitMap();
+          localStorage.setItem("drainase_map_view_set", "1");
+        }
+      }catch(err){ console.error(err); }
+      finally{ if(show) showLoader(false); }
+    }
+
+
+    async function downloadKMZ(){
+      const statusEl = document.getElementById("kmzStatus");
+      try{
+        if (!lastMapFeatures.length) {
+          const data = await apiGet("getMapData", {
+            status: val("mapFilterStatus"),
+            kecamatan: val("mapFilterKecamatan"),
+            korwil: val("mapFilterKorwil"),
+            tahap: val("mapFilterTahap")
+          });
+          if (!data.success) throw new Error(data.message || "Gagal mengambil data KMZ.");
+          lastMapFeatures = data.features || [];
+        }
+
+        if (!lastMapFeatures.length) {
+          if (statusEl) { statusEl.className = "status warn"; statusEl.textContent = "Tidak ada data koordinat valid untuk dibuat KMZ."; }
+          return;
+        }
+
+        const kml = buildKmlDocument(lastMapFeatures);
+        const filename = buildKmzFilename();
+
+        if (window.JSZip) {
+          const zip = new JSZip();
+          zip.file("doc.kml", kml);
+          const blob = await zip.generateAsync({ type:"blob", compression:"DEFLATE" });
+          triggerDownload(blob, filename);
+        } else {
+          // Fallback jika CDN JSZip gagal: file tetap bisa dibuka di Google Earth sebagai KML.
+          triggerDownload(new Blob([kml], { type:"application/vnd.google-earth.kml+xml;charset=utf-8" }), filename.replace(/\.kmz$/i, ".kml"));
+        }
+
+        if (statusEl) { statusEl.className = "status ok"; statusEl.textContent = `KMZ berhasil dibuat dari ${formatNumber(lastMapFeatures.length)} data berpeta sesuai filter aktif.`; }
+      }catch(err){
+        console.error(err);
+        if (statusEl) { statusEl.className = "status err"; statusEl.textContent = err.message || "Gagal membuat KMZ."; }
+      }
+    }
+
+    function buildKmzFilename(){
+      const parts = ["Drainase_2026"];
+      const kec = val("mapFilterKecamatan");
+      const status = val("mapFilterStatus");
+      const korwil = val("mapFilterKorwil");
+      const tahap = val("mapFilterTahap");
+      if (kec) parts.push(kec);
+      if (status) parts.push(status);
+      if (korwil) parts.push(korwil);
+      if (tahap) parts.push(tahap);
+      const date = new Date().toISOString().slice(0,10);
+      return sanitizeFilename(parts.join("_") + "_" + date + ".kmz");
+    }
+
+    function buildKmlDocument(features){
+      const placemarks = [];
+      features.forEach(f => {
+        if (f.awal) placemarks.push(buildPointPlacemark(f, "Titik Awal", f.awal, "awalStyle"));
+        if (f.akhir) placemarks.push(buildPointPlacemark(f, "Titik Akhir", f.akhir, "akhirStyle"));
+        if (f.awal && f.akhir) placemarks.push(buildLinePlacemark(f));
+      });
+
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>Dashboard Drainase TA 2026</name>
+  <description>Export KMZ dari dashboard kegiatan drainase sesuai filter peta aktif.</description>
+  <Style id="awalStyle"><IconStyle><color>ff008080</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href></Icon></IconStyle></Style>
+  <Style id="akhirStyle"><IconStyle><color>ff0000ff</color><scale>1.0</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/blu-circle.png</href></Icon></IconStyle></Style>
+  <Style id="lineStyle"><LineStyle><color>ff1F6366</color><width>4</width></LineStyle></Style>
+  ${placemarks.join("\n")}
+</Document>
+</kml>`;
+    }
+
+    function buildPointPlacemark(f, label, coord, styleId){
+      return `<Placemark>
+  <name>${kmlEscape(label + " - " + (f.no || "") + " - " + (f.namaKegiatan || "Kegiatan"))}</name>
+  <styleUrl>#${styleId}</styleUrl>
+  <description><![CDATA[${kmlDescriptionHtml(f, label)}]]></description>
+  <Point><coordinates>${Number(coord.lng)},${Number(coord.lat)},0</coordinates></Point>
+</Placemark>`;
+    }
+
+    function buildLinePlacemark(f){
+      return `<Placemark>
+  <name>${kmlEscape("Line Trase - " + (f.no || "") + " - " + (f.namaKegiatan || "Kegiatan"))}</name>
+  <styleUrl>#lineStyle</styleUrl>
+  <description><![CDATA[${kmlDescriptionHtml(f, "Line Trase") }]]></description>
+  <LineString><tessellate>1</tessellate><coordinates>${Number(f.awal.lng)},${Number(f.awal.lat)},0 ${Number(f.akhir.lng)},${Number(f.akhir.lat)},0</coordinates></LineString>
+</Placemark>`;
+    }
+
+    function kmlDescriptionHtml(f, tipe){
+      const rows = [
+        ["Tipe", tipe],
+        ["No", f.no],
+        ["Nama Kegiatan", f.namaKegiatan],
+        ["Pagu", f.pagu],
+        ["Status", f.status],
+        ["Korwil", f.korwil],
+        ["Tahap", f.tahap],
+        ["Kecamatan", f.kecamatan],
+        ["Desa", f.desa],
+        ["Sumber Dana", f.sumberDana],
+        ["Asal Usulan", f.asalUsulan],
+        ["Program", f.program],
+        ["Volume/Konstruksi", f.volumeKonstruksi],
+        ["Titik Awal", f.titikAwal],
+        ["Titik Akhir", f.titikAkhir],
+        ["Foto", f.fotoUrl ? `<a href="${escapeAttr(f.fotoUrl)}">Buka Foto</a>` : ""]
+      ];
+      return `<table border="1" cellpadding="5" cellspacing="0">${rows.map(([k,v]) => `<tr><td><b>${escapeHtml(k)}</b></td><td>${v || "-"}</td></tr>`).join("")}</table>`;
+    }
+
+    function triggerDownload(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function kmlEscape(v){ return String(v ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[m])); }
+    function sanitizeFilename(v){ return String(v || "data.kmz").replace(/[\\/:*?"<>|#%{}~&]/g,"-").replace(/\s+/g,"_").slice(0,160); }
+
+    function popupHtml(f){
+      return `<div class="popup-title">${escapeHtml(f.namaKegiatan)}</div>
+        <div class="popup-row"><b>No:</b> ${escapeHtml(f.no)}</div>
+        <div class="popup-row"><b>Pagu:</b> ${escapeHtml(f.pagu)}</div>
+        <div class="popup-row"><b>Status:</b> ${escapeHtml(f.status)}</div>
+        <div class="popup-row"><b>Korwil/Tahap:</b> ${escapeHtml(f.korwil)} / ${escapeHtml(f.tahap)}</div>
+        <div class="popup-row"><b>Kecamatan/Desa:</b> ${escapeHtml(f.kecamatan)} / ${escapeHtml(f.desa)}</div>
+        <div class="popup-row"><b>Sumber Dana:</b> ${escapeHtml(f.sumberDana)}</div>
+        <div class="popup-row"><b>Volume:</b> ${escapeHtml(f.volumeKonstruksi)}</div>
+        <div class="popup-row"><b>Titik Awal:</b> ${escapeHtml(f.titikAwal)}</div>
+        <div class="popup-row"><b>Titik Akhir:</b> ${escapeHtml(f.titikAkhir)}</div>
+        ${f.fotoUrl ? `<a class="popup-link" href="${escapeAttr(f.fotoUrl)}" target="_blank" rel="noopener">Buka Foto</a>` : ""}`;
+    }
+
+    function fitMap(){ if (map && lastBounds && lastBounds.isValid()) map.fitBounds(lastBounds, { padding:[30,30], maxZoom:17 }); }
+
+    function renderInvalid(items){
+      const box = document.getElementById("invalidList");
+      if (!items.length) { box.textContent = "Tidak ada data invalid."; return; }
+      box.innerHTML = items.slice(0,80).map(r => `<div class="invalid-item"><b>No ${escapeHtml(r.no)}</b> - ${escapeHtml(r.namaKegiatan)}<br>Kec: ${escapeHtml(r.kecamatan)} / Desa: ${escapeHtml(r.desa)}<br>Awal: ${escapeHtml(r.titikAwal || "-")}<br>Akhir: ${escapeHtml(r.titikAkhir || "-")}</div>`).join("");
+    }
+
+    function fillSelect(id, arr, placeholder){
+      const el=document.getElementById(id); if(!el) return;
+      el.innerHTML = `<option value="">${escapeHtml(placeholder || "Pilih")}</option>` + (arr||[]).map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join("");
+    }
+    function fillFilter(id, arr, label){
+      const el=document.getElementById(id); if(!el) return;
+      el.innerHTML = `<option value="">${escapeHtml(label || "Semua")}</option>` + (arr||[]).map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join("");
+    }
+    function val(id){ const el=document.getElementById(id); return el ? String(el.value||"").trim() : ""; }
+    function setVal(id,v){ const el=document.getElementById(id); if(el) el.value = v || ""; }
+    function escapeHtml(v){ return String(v??"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+    function escapeAttr(v){ return escapeHtml(v); }
+    function formatNumber(n){ return new Intl.NumberFormat("id-ID").format(Number(n)||0); }
+    function formatRupiah(n){
+      const num = Number(n) || 0;
+      return new Intl.NumberFormat("id-ID",{
+        style:"currency",
+        currency:"IDR",
+        minimumFractionDigits: num % 1 === 0 ? 0 : 2,
+        maximumFractionDigits: 2
+      }).format(num).replace(/ /g," ");
+    }
+  </script>
+</body>
+</html>
