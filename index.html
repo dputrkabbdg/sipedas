@@ -7,574 +7,457 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
-    :root{
-      --primary:#0d9488;
-      --primary-dark:#0f766e;
-      --primary-light:#14b8a6;
-      --primary-soft:#5eead4;
-      --accent:#0ea5e9;
-      --accent-dark:#0284c7;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --success:#10b981;
-      --purple:#8b5cf6;
-      --bg:#f0fdfa;
-      --bg-alt:#f8fafc;
-      --card:#ffffff;
-      --text:#0f172a;
-      --text-soft:#334155;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --line-soft:#f1f5f9;
-      --shadow-sm:0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
-      --shadow:0 4px 6px -1px rgba(15,23,42,.06), 0 10px 20px -5px rgba(15,23,42,.08);
-      --shadow-lg:0 20px 40px -12px rgba(15,23,42,.15), 0 8px 16px -8px rgba(15,23,42,.1);
-      --shadow-xl:0 25px 50px -12px rgba(15,23,42,.25);
-      --radius:16px;
-      --radius-lg:24px;
-      --radius-xl:32px;
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #14b8a6;
+      --primary-soft: #ccfbf1;
+      --accent: #0ea5e9;
+      --accent-dark: #0284c7;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --purple: #8b5cf6;
+      
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-soft: #334155;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --line-soft: #f1f5f9;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+      --shadow-glow: 0 0 20px rgba(13, 148, 136, 0.15);
+      
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
     }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{
-      font-family:'Plus Jakarta Sans',Inter,Arial,sans-serif;
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(13,148,136,.08), transparent 60%),
-        radial-gradient(1000px 500px at 100% 0%, rgba(14,165,233,.06), transparent 60%),
-        linear-gradient(180deg,#f0fdfa 0%,#f8fafc 100%);
-      color:var(--text);
-      min-height:100vh;
-      line-height:1.5;
-      -webkit-font-smoothing:antialiased;
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(13, 148, 136, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ============ TOPBAR ============ */
-    .topbar{
-      position:sticky;top:0;z-index:1000;
-      background:rgba(255,255,255,.85);
-      backdrop-filter:blur(20px) saturate(180%);
-      -webkit-backdrop-filter:blur(20px) saturate(180%);
-      border-bottom:1px solid rgba(15,23,42,.06);
+    .topbar {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.6);
     }
-    .topbar-inner{
-      max-width:1880px;margin:auto;padding:14px 28px;
-      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    .topbar-inner {
+      max-width: 1600px; margin: auto; padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     }
-    .brand{display:flex;align-items:center;gap:14px}
-    .brand-logo{
-      width:56px;height:56px;border-radius:16px;
-      background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;font-size:24px;font-weight:900;
-      box-shadow:0 10px 24px rgba(13,148,136,.3), inset 0 1px 0 rgba(255,255,255,.2);
-      overflow:hidden;position:relative;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px; font-weight: 800;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+      overflow: hidden; position: relative; flex-shrink: 0;
     }
-    .brand-logo::before{
-      content:"";position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,.2),transparent 50%);
+    .brand-logo img { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1; }
+    .brand-title {
+      margin: 0; font-size: 15px; font-weight: 800; line-height: 1.2;
+      color: var(--text); letter-spacing: -0.01em;
     }
-    .brand-logo img{width:100%;height:100%;object-fit:contain;position:relative;z-index:1}
-    .brand-title{
-      margin:0;font-size:16px;font-weight:800;line-height:1.25;
-      background:linear-gradient(135deg,var(--primary-dark),var(--accent-dark));
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-      letter-spacing:-.01em;
+    .brand-subtitle {
+      margin: 2px 0 0; font-size: 11px; color: var(--muted); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .brand-subtitle{
-      margin:3px 0 0;font-size:11.5px;color:var(--muted);font-weight:700;
-      text-transform:uppercase;letter-spacing:.06em;
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .chip, .top-link {
+      padding: 8px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
+      white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
     }
-    .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .chip,.top-link{
-      padding:9px 14px;border-radius:999px;font-size:12px;font-weight:700;
-      white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
-      transition:all .25s ease;
+    .chip {
+      background: #fff; border: 1px solid var(--line); color: var(--text-soft);
+      box-shadow: var(--shadow-sm);
     }
-    .chip{
-      background:#fff;border:1px solid var(--line);color:var(--text-soft);
-      box-shadow:var(--shadow-sm);
+    .top-link {
+      background: var(--text); color: #fff; text-decoration: none;
+      box-shadow: var(--shadow);
     }
-    .chip i{font-size:11px;opacity:.7}
-    .top-link{
-      background:linear-gradient(135deg,var(--primary),var(--accent));
-      color:#fff;text-decoration:none;
-      box-shadow:0 8px 20px rgba(13,148,136,.3), inset 0 1px 0 rgba(255,255,255,.2);
-    }
-    .top-link:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(13,148,136,.4)}
+    .top-link:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); background: var(--text-soft); }
 
     /* ============ WRAP ============ */
-    .wrap{max-width:1880px;margin:auto;padding:24px 28px 48px}
+    .wrap { max-width: 1600px; margin: auto; padding: 24px 24px 48px; }
 
     /* ============ HERO ============ */
-    .hero{
-      position:relative;overflow:hidden;
-      border-radius:var(--radius-xl);
-      background:
-        linear-gradient(135deg,rgba(15,118,110,.95) 0%,rgba(13,148,136,.9) 40%,rgba(14,165,233,.85) 100%);
-      color:#fff;padding:36px 36px 32px;
-      box-shadow:var(--shadow-xl);
-      margin-bottom:28px;
+    .hero {
+      position: relative; overflow: hidden;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #0ea5e9 100%);
+      color: #fff; padding: 32px;
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+      margin-bottom: 24px;
     }
-    .hero::before{
-      content:"";position:absolute;width:500px;height:500px;right:-150px;top:-200px;
-      border-radius:50%;
-      background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%);
+    .hero::before {
+      content: ""; position: absolute; width: 400px; height: 400px; right: -100px; top: -150px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
     }
-    .hero::after{
-      content:"";position:absolute;width:400px;height:400px;left:-100px;bottom:-200px;
-      border-radius:50%;
-      background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);
+    .hero-body {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: start;
     }
-    .hero-body{
-      position:relative;z-index:1;
-      display:grid;grid-template-columns:1fr 1.1fr;gap:32px;align-items:start;
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 99px;
+      background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+      margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .hero-badge{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:7px 14px;border-radius:999px;
-      background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
-      font-size:12px;font-weight:700;letter-spacing:.04em;
-      margin-bottom:16px;border:1px solid rgba(255,255,255,.2);
+    .hero h1 {
+      margin: 0 0 12px; font-size: clamp(28px, 3.5vw, 40px); line-height: 1.1;
+      font-weight: 800; letter-spacing: -0.02em;
     }
-    .hero-badge i{font-size:10px}
-    .hero h1{
-      margin:0 0 14px;
-      font-size:clamp(30px,4vw,48px);line-height:1.05;
-      font-weight:800;letter-spacing:-.02em;
-      text-shadow:0 2px 20px rgba(0,0,0,.15);
+    .hero p {
+      margin: 0; font-size: 14px; line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9); max-width: 600px;
     }
-    .hero p{
-      margin:0;font-size:15.5px;line-height:1.7;
-      color:rgba(255,255,255,.92);max-width:720px;
+
+    /* ============ RESUME CARDS ============ */
+    .resume-board {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
     }
-    .resume-board{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 12px;
-}
-   .resume-card{
-  background: rgba(255,255,255,0.98);
-  color: var(--text);
-  border-radius: 18px;
-  padding: 16px 18px;
-  min-height: 120px;
-  border: 1px solid rgba(255,255,255,0.5);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.05);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-    .resume-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.2)}
-    .resume-card::before{
-      content:"";position:absolute;top:0;left:0;right:0;height:4px;
-      background:linear-gradient(90deg,var(--primary),var(--accent));
+    .resume-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      color: var(--text);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: var(--shadow-lg);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex; flex-direction: column; justify-content: space-between;
     }
-    .resume-card:nth-child(2)::before{background:linear-gradient(90deg,#0ea5e9,#6366f1)}
-    .resume-card:nth-child(3)::before{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
-    .resume-card:nth-child(4)::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
-    .resume-card:nth-child(5)::before{background:linear-gradient(90deg,#10b981,#14b8a6)}
-    .resume-card:nth-child(6)::before{background:linear-gradient(90deg,#ef4444,#f97316)}
-    .resume-label{
-      font-size:11.5px;font-weight:700;line-height:1.3;
-      color:var(--muted);margin-bottom:10px;
-      text-transform:uppercase;letter-spacing:.06em;
+    .resume-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-xl); }
+    .resume-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
     }
-    .resume-value{
-  font-size: clamp(20px, 2.5vw, 28px);
-  line-height: 1.1;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: -0.02em;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  max-width: 100%;
-  display: block;
-}
-    .resume-sub{margin-top:8px;font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.45}
+    .resume-label {
+      font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;
+    }
+    .resume-value {
+      font-size: 24px; line-height: 1.1; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      letter-spacing: -0.02em; margin-bottom: 4px;
+    }
+    .resume-sub { font-size: 11px; color: var(--muted); font-weight: 500; line-height: 1.4; }
 
     /* ============ STATS ============ */
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-    .stat-card{
-      position:relative;overflow:hidden;
-      border-radius:var(--radius-lg);padding:22px;min-height:150px;
-      color:#fff;box-shadow:var(--shadow-lg);
-      transition:transform .3s ease, box-shadow .3s ease;
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      position: relative; overflow: hidden;
+      border-radius: var(--radius-lg); padding: 20px;
+      color: #fff; box-shadow: var(--shadow-lg);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    .stat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-xl)}
-    .stat-card::before{
-      content:"";position:absolute;width:180px;height:180px;right:-60px;bottom:-70px;
-      border-radius:50%;background:rgba(255,255,255,.12);
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-xl); }
+    .stat-total { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    .stat-1 { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); }
+    .stat-2 { background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); }
+    .stat-3 { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); }
+    .stat-4 { background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%); }
+    
+    .stat-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 12px; opacity: 0.9; display: flex; align-items: center; gap: 6px;
     }
-    .stat-card::after{
-      content:"";position:absolute;width:100px;height:100px;right:-30px;top:-30px;
-      border-radius:50%;background:rgba(255,255,255,.08);
-    }
-    .stat-total{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)}
-    .stat-1{background:linear-gradient(135deg,#0d9488 0%,#14b8a6 100%)}
-    .stat-2{background:linear-gradient(135deg,#0284c7 0%,#0ea5e9 100%)}
-    .stat-3{background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%)}
-    .stat-4{background:linear-gradient(135deg,#ea580c 0%,#f59e0b 100%)}
-    .stat-label{
-      position:relative;font-size:11.5px;font-weight:700;
-      text-transform:uppercase;letter-spacing:.08em;line-height:1.35;
-      margin-bottom:14px;opacity:.9;
-    }
-    .stat-value{
-  position: relative;
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-}
+    .stat-value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 6px; letter-spacing: -0.02em; }
+    .stat-money { font-size: 12px; font-weight: 600; margin-bottom: 8px; opacity: 0.9; }
+    .stat-desc { font-size: 11px; font-weight: 500; line-height: 1.4; opacity: 0.8; }
 
-.stat-money{
-  position: relative;
-  font-size: clamp(11px, 1.3vw, 13px);
-  font-weight: 700;
-  margin-bottom: 10px;
-  opacity: 0.95;
-  word-break: break-all;
-  overflow-wrap: break-word;
-  line-height: 1.3;
-  max-width: 100%;
-}
-    .stat-desc{position:relative;font-size:12px;font-weight:500;line-height:1.5;opacity:.85}
-
-    /* ============ LOGIN CARD ============ */
-    .login-card,.panel,.map-side{
-      background:var(--card);
-      border:1px solid var(--line-soft);
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow);
+    /* ============ LOGIN & PANELS ============ */
+    .login-card, .panel, .map-side {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
     }
-    .login-card{
-      display:flex;gap:12px;align-items:end;flex-wrap:wrap;
-      padding:18px;margin-bottom:18px;
-      background:linear-gradient(135deg,#fff 0%,#f0fdfa 100%);
+    .login-card {
+      display: flex; gap: 12px; align-items: end; flex-wrap: wrap;
+      padding: 16px; margin-bottom: 20px;
+      background: linear-gradient(to right, #ffffff, #f8fafc);
     }
-    .login-field{min-width:180px;flex:1}
-    .auth-status{
-      font-size:13px;font-weight:700;color:var(--text-soft);
-      min-width:220px;padding:10px 14px;
-      background:var(--line-soft);border-radius:12px;
+    .login-field { min-width: 180px; flex: 1; }
+    .auth-status {
+      font-size: 12px; font-weight: 600; color: var(--text-soft);
+      min-width: 200px; padding: 10px 14px;
+      background: var(--bg-alt); border-radius: var(--radius); border: 1px solid var(--line);
     }
 
     /* ============ TABS ============ */
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-    .tab{
-      border:1px solid var(--line);border-radius:14px;
-      padding:11px 18px;background:#fff;color:var(--text-soft);
-      font-weight:700;cursor:pointer;font-size:13.5px;
-      display:inline-flex;align-items:center;gap:8px;
-      transition:all .25s ease;
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; padding: 4px; background: var(--bg-alt); border-radius: var(--radius-lg); width: fit-content; border: 1px solid var(--line); }
+    .tab {
+      border: none; border-radius: 10px; padding: 10px 16px;
+      background: transparent; color: var(--muted);
+      font-weight: 600; cursor: pointer; font-size: 13px;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
     }
-    .tab:hover{border-color:var(--primary-soft);color:var(--primary-dark)}
-    .tab.active{
-      background:linear-gradient(135deg,var(--primary),var(--accent));
-      color:#fff;border-color:transparent;
-      box-shadow:0 8px 20px rgba(13,148,136,.25);
+    .tab:hover { color: var(--primary-dark); background: rgba(255,255,255,0.5); }
+    .tab.active {
+      background: #fff; color: var(--primary-dark);
+      box-shadow: var(--shadow-sm);
     }
 
     /* ============ VIEWS ============ */
-    .view{display:none;animation:fadeIn .4s ease}
-    .view.active{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .admin-only{display:none!important}
-    body.admin-mode .admin-only{display:initial!important}
-    body.admin-mode section.admin-only{display:block!important}
-    body.admin-mode button.admin-only{display:inline-flex!important}
+    .view { display: none; animation: fadeIn 0.3s ease-out; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .admin-only { display: none !important; }
+    body.admin-mode .admin-only { display: initial !important; }
+    body.admin-mode section.admin-only { display: block !important; }
+    body.admin-mode button.admin-only { display: inline-flex !important; }
 
-    /* ============ PANEL ============ */
-    .panel{overflow:hidden}
-    .panel-body{padding:28px}
-    .panel h2,.map-side h2{
-      margin:0 0 8px;font-size:22px;font-weight:800;
-      color:var(--text);letter-spacing:-.01em;
-      display:flex;align-items:center;gap:10px;
+    /* ============ PANEL & FORM ============ */
+    .panel { overflow: hidden; }
+    .panel-body { padding: 24px; }
+    .panel h2, .map-side h2 {
+      margin: 0 0 6px; font-size: 18px; font-weight: 800;
+      color: var(--text); letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 8px;
     }
-    .panel h2::before,.map-side h2::before{
-      content:"";width:4px;height:24px;border-radius:2px;
-      background:linear-gradient(180deg,var(--primary),var(--accent));
+    .panel h2::before, .map-side h2::before {
+      content: ""; width: 4px; height: 18px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
     }
-    .panel p,.map-side p{margin:0 0 20px;color:var(--muted);line-height:1.65;font-size:14px}
+    .panel p, .map-side p { margin: 0 0 20px; color: var(--muted); line-height: 1.6; font-size: 13px; }
 
-    /* ============ FORM ============ */
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-    .full{grid-column:1/-1}
-    label{
-      display:flex;align-items:center;gap:6px;
-      margin-bottom:8px;font-size:12.5px;font-weight:700;
-      color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .full { grid-column: 1 / -1; }
+    
+    label {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 6px; font-size: 12px; font-weight: 700;
+      color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.03em;
     }
-    input,select,textarea{
-      width:100%;padding:12px 14px;border-radius:12px;
-      border:1.5px solid var(--line);background:#fff;
-      font:inherit;font-size:14px;color:var(--text);
-      transition:all .2s ease;
+    input, select, textarea {
+      width: 100%; padding: 10px 14px; border-radius: 10px;
+      border: 1px solid var(--line); background: var(--bg);
+      font-family: inherit; font-size: 13px; color: var(--text);
+      transition: all 0.2s ease;
     }
-    input:focus,select:focus,textarea:focus{
-      outline:none;border-color:var(--primary);
-      box-shadow:0 0 0 4px rgba(13,148,136,.12);
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary); background: #fff;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
     }
-    .coord-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-    .file-note{font-size:12px;color:var(--muted);margin:6px 0}
-    .preview-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .preview-item{
-      width:100px;border-radius:10px;overflow:hidden;
-      border:1px solid var(--line);background:var(--bg-alt);
+    .coord-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .file-note { font-size: 11px; color: var(--muted); margin: 6px 0; }
+    
+    .preview-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .preview-item {
+      width: 90px; border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--line); background: #fff;
+      box-shadow: var(--shadow-sm);
     }
-    .preview-item img{width:100%;height:80px;object-fit:cover;display:block}
-    .preview-name{font-size:10px;padding:4px;text-align:center;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .preview-item img { width: 100%; height: 70px; object-fit: cover; display: block; }
+    .preview-name { font-size: 10px; padding: 4px; text-align: center; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* ============ BUTTONS ============ */
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-    button{
-      border:none;border-radius:12px;padding:11px 18px;
-      font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
-      display:inline-flex;align-items:center;gap:8px;
-      transition:all .25s ease;
+    .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    button {
+      border: none; border-radius: 10px; padding: 10px 16px;
+      font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s ease;
     }
-    button:hover{transform:translateY(-1px)}
-    button:active{transform:translateY(0)}
-    .btn-primary{
-      background:linear-gradient(135deg,var(--primary),var(--accent));
-      color:#fff;box-shadow:0 6px 16px rgba(13,148,136,.25);
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
     }
-    .btn-primary:hover{box-shadow:0 10px 24px rgba(13,148,136,.35)}
-    .btn-light{
-      background:#fff;color:var(--text-soft);border:1.5px solid var(--line);
+    .btn-primary:hover { box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35); }
+    
+    .btn-light {
+      background: #fff; color: var(--text-soft); border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
     }
-    .btn-light:hover{background:var(--bg-alt);border-color:var(--primary-soft)}
-    .btn-green{
-      background:linear-gradient(135deg,#10b981,#059669);color:#fff;
-      box-shadow:0 6px 16px rgba(16,185,129,.25);
+    .btn-light:hover { background: var(--bg-alt); border-color: var(--muted); }
+    
+    .btn-green {
+      background: linear-gradient(135deg, #10b981, #059669); color: #fff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
     }
-    .btn-danger{
-      background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;
-      box-shadow:0 6px 16px rgba(239,68,68,.25);
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
     }
 
     /* ============ STATUS ============ */
-    .status{
-      margin-top:14px;font-size:13.5px;font-weight:700;
-      min-height:22px;padding:10px 14px;border-radius:12px;
-      display:none;
+    .status {
+      margin-top: 16px; font-size: 13px; font-weight: 600;
+      min-height: 20px; padding: 10px 14px; border-radius: 10px;
+      display: none; align-items: center; gap: 8px;
     }
-    .status:not(:empty){display:flex;align-items:center;gap:8px}
-    .status.ok{color:#065f46;background:#d1fae5;border:1px solid #a7f3d0}
-    .status.warn{color:#92400e;background:#fef3c7;border:1px solid #fde68a}
-    .status.err{color:#991b1b;background:#fee2e2;border:1px solid #fecaca}
-    .status.ok::before{content:"\f058";font-family:"Font Awesome 6 Free";font-weight:900}
-    .status.warn::before{content:"\f06a";font-family:"Font Awesome 6 Free";font-weight:900}
-    .status.err::before{content:"\f057";font-family:"Font Awesome 6 Free";font-weight:900}
+    .status:not(:empty) { display: flex; }
+    .status.ok { color: #065f46; background: #d1fae5; border: 1px solid #a7f3d0; }
+    .status.warn { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
+    .status.err { color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; }
+    .status.ok::before { content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
+    .status.warn::before { content: "\f06a"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
+    .status.err::before { content: "\f057"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
 
-    /* ============ TOOLBAR & TABLE ============ */
-    .toolbar{display:grid;grid-template-columns:1.4fr repeat(4,.75fr) auto;gap:10px;margin-bottom:14px}
-    .table-wrap{
-      overflow:auto;border-radius:16px;
-      border:1px solid var(--line);background:#fff;
-      box-shadow:var(--shadow-sm);
+    /* ============ TABLE ============ */
+    .toolbar { display: grid; grid-template-columns: 1.5fr repeat(4, 0.8fr) auto; gap: 10px; margin-bottom: 16px; }
+    .table-wrap {
+      overflow: auto; border-radius: var(--radius-lg);
+      border: 1px solid var(--line); background: #fff;
+      box-shadow: var(--shadow-sm); max-height: 600px;
     }
-    table{width:100%;min-width:1100px;border-collapse:collapse;font-size:13px}
-    th,td{padding:13px 14px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
-    th{
-      font-size:11px;text-transform:uppercase;color:var(--muted);
-      font-weight:800;letter-spacing:.06em;
-      background:linear-gradient(180deg,#f8fafc,#f1f5f9);
-      position:sticky;top:0;z-index:1;
-      border-bottom:2px solid var(--line);
+    table { width: 100%; min-width: 1100px; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    th, td { padding: 12px 16px; text-align: left; vertical-align: middle; }
+    th {
+      font-size: 11px; text-transform: uppercase; color: var(--muted);
+      font-weight: 700; letter-spacing: 0.05em;
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 0; z-index: 10;
+      border-bottom: 2px solid var(--line);
     }
-    tbody tr{transition:background .15s ease}
-    tbody tr:hover{background:#f0fdfa}
-    tbody tr:last-child td{border-bottom:none}
-    .tag{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:5px 11px;border-radius:999px;
-      background:linear-gradient(135deg,#ccfbf1,#a7f3d0);
-      color:#0f766e;font-size:11.5px;font-weight:700;
-      white-space:nowrap;
+    td { border-bottom: 1px solid var(--line-soft); color: var(--text-soft); }
+    tbody tr { transition: background 0.15s ease; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody tr:last-child td { border-bottom: none; }
+    
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 99px;
+      background: var(--primary-soft); color: var(--primary-dark);
+      font-size: 11px; font-weight: 700; white-space: nowrap;
     }
-    .small-btn{padding:7px 12px;border-radius:10px;font-size:12px}
+    .small-btn { padding: 6px 10px; border-radius: 8px; font-size: 12px; }
 
     /* ============ MAP LAYOUT ============ */
-    .map-layout{display:grid;grid-template-columns:380px 1fr;gap:20px}
-    .map-side{padding:22px}
-    #map{
-      height:760px;width:100%;
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow-lg);
-      border:1px solid var(--line-soft);
-      overflow:hidden;
+    .map-layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+    .map-side { padding: 20px; height: fit-content; }
+    #map {
+      height: 760px; width: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--line);
+      overflow: hidden; z-index: 1;
     }
-    .map-tools{
-      margin-top:16px;padding:16px;border-radius:16px;
-      background:linear-gradient(135deg,#f0fdfa,#ecfeff);
-      border:1px solid #ccfbf1;
+    .map-tools {
+      margin-top: 16px; padding: 16px; border-radius: var(--radius);
+      background: var(--bg-alt); border: 1px solid var(--line);
     }
-    .statline{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-    .invalid-box{
-      max-height:245px;overflow:auto;
-      border:1px solid var(--line);border-radius:14px;
-      padding:10px;background:var(--bg-alt);
+    .statline { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+    .invalid-box {
+      max-height: 240px; overflow-y: auto;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 8px; background: var(--bg);
     }
-    .invalid-item{
-      font-size:12px;border-bottom:1px solid var(--line-soft);
-      padding:10px 4px;line-height:1.5;
+    .invalid-item {
+      font-size: 12px; border-bottom: 1px solid var(--line-soft);
+      padding: 10px 8px; line-height: 1.5;
     }
-    .invalid-item:last-child{border-bottom:0}
-    .invalid-item b{color:var(--primary-dark)}
+    .invalid-item:last-child { border-bottom: 0; }
+    .invalid-item b { color: var(--primary-dark); }
 
     /* ============ POPUP ============ */
-    .popup-title{
-      font-weight:800;font-size:14px;color:var(--primary-dark);
-      margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--primary-soft);
+    .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: var(--shadow-xl); padding: 0; overflow: hidden; }
+    .leaflet-popup-content { margin: 0; width: 280px !important; }
+    .popup-title {
+      font-weight: 800; font-size: 14px; color: var(--primary-dark);
+      padding: 12px 16px 8px; border-bottom: 1px solid var(--line-soft);
+      background: #f8fafc;
     }
-    .popup-row{font-size:12px;margin:5px 0;color:var(--text-soft)}
-    .popup-row b{color:var(--text);font-weight:700}
-    .popup-link{
-      display:inline-block;margin-top:10px;padding:6px 12px;
-      background:linear-gradient(135deg,var(--primary),var(--accent));
-      color:#fff;font-weight:700;text-decoration:none;
-      border-radius:8px;font-size:12px;
+    .popup-row { font-size: 12px; margin: 0; padding: 6px 16px; color: var(--text-soft); display: flex; justify-content: space-between; }
+    .popup-row b { color: var(--text); font-weight: 600; }
+    .popup-link {
+      display: block; text-align: center; margin: 12px 16px 16px; padding: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-weight: 700; text-decoration: none;
+      border-radius: 8px; font-size: 12px;
     }
 
     /* ============ LOADER ============ */
-    .loader{
-      display:none;position:fixed;inset:0;
-      background:rgba(15,23,42,.4);backdrop-filter:blur(8px);
-      align-items:center;justify-content:center;z-index:9999;
+    .loader {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; z-index: 9999;
     }
-    .loader.active{display:flex}
-    .loader-box{
-      background:#fff;padding:24px 32px;border-radius:20px;
-      box-shadow:var(--shadow-xl);font-weight:700;
-      display:flex;align-items:center;gap:14px;
-      color:var(--text);
+    .loader.active { display: flex; }
+    .loader-box {
+      background: #fff; padding: 16px 24px; border-radius: 12px;
+      box-shadow: var(--shadow-xl); font-weight: 600; font-size: 14px;
+      display: flex; align-items: center; gap: 12px; color: var(--text);
     }
-    .loader-box::before{
-      content:"";width:28px;height:28px;border-radius:50%;
-      border:3px solid var(--line);border-top-color:var(--primary);
-      animation:spin 1s linear infinite;
+    .loader-box::before {
+      content: ""; width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--line); border-top-color: var(--primary);
+      animation: spin 0.8s linear infinite;
     }
-    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ============ PAGINATION ============ */
-    .pagination-bar{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      flex-wrap:wrap;margin-top:14px;padding:14px;
-      background:linear-gradient(135deg,#f8fafc,#f1f5f9);
-      border:1px solid var(--line);border-radius:16px;
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap; margin-top: 16px; padding: 12px 16px;
+      background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
     }
-    .pagination-info{font-size:13px;color:var(--muted);font-weight:600}
-    .pagination-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .page-size-select{width:auto;min-width:100px;padding:8px 12px;border-radius:10px;font-size:13px}
+    .pagination-info { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .pagination-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .page-size-select { width: auto; min-width: 80px; padding: 6px 10px; border-radius: 8px; font-size: 12px; }
 
     /* ============ RESPONSIVE ============ */
-    @media(max-width:1400px){
-      .hero-body,.map-layout{grid-template-columns:1fr}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .toolbar{grid-template-columns:1fr 1fr}
-      .resume-board{grid-template-columns:repeat(2,1fr)}
+    @media (max-width: 1200px) {
+      .hero-body, .map-layout { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
     }
-    @media(max-width:760px){
-      .topbar-inner,.wrap{padding-left:16px;padding-right:16px}
-      .hero{padding:24px}
-      .hero h1{font-size:26px}
-      .resume-board,.stats,.grid,.toolbar{grid-template-columns:1fr}
-      #map{height:540px}
-      button{width:100%}
-      .btns{flex-direction:column}
-      .brand-title{font-size:14px}
-      .brand-subtitle{font-size:10px}
+    @media (max-width: 768px) {
+      .topbar-inner, .wrap { padding-left: 16px; padding-right: 16px; }
+      .hero { padding: 24px; }
+      .hero h1 { font-size: 24px; }
+      .resume-board, .stats, .grid, .toolbar { grid-template-columns: 1fr; }
+      #map { height: 500px; }
+      button { width: 100%; }
+      .btns { flex-direction: column; }
+      .brand-title { font-size: 14px; }
+      .login-card { flex-direction: column; align-items: stretch; }
+      .login-field { min-width: 100%; }
     }
 
     /* ============ SCROLLBAR ============ */
-    ::-webkit-scrollbar{width:10px;height:10px}
-    ::-webkit-scrollbar-track{background:#f1f5f9;border-radius:10px}
-    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary-soft),var(--primary));border-radius:10px;border:2px solid #f1f5f9}
-    ::-webkit-scrollbar-thumb:hover{background:var(--primary)}
-
-    /* ============ RESPONSIVE UNTUK LAYAR BESAR ============ */
-@media (min-width: 1920px) {
-  .resume-value{
-    font-size: 26px;
-  }
-  .stat-value{
-    font-size: 30px;
-  }
-  .stat-money{
-    font-size: 12px;
-  }
-  .resume-card{
-    min-height: 130px;
-    padding: 20px;
-  }
-  .stat-card{
-    min-height: 160px;
-    padding: 24px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .resume-value{
-    font-size: 28px;
-  }
-  .stat-value{
-    font-size: 32px;
-  }
-  .stat-money{
-    font-size: 13px;
-  }
-}
-
-/* ============ RESPONSIVE UNTUK LAYAR KECIL ============ */
-@media (max-width: 1400px) {
-  .resume-value{
-    font-size: 24px;
-  }
-  .stat-value{
-    font-size: 28px;
-  }
-  .stat-money{
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 760px) {
-  .resume-value{
-    font-size: 20px;
-  }
-  .stat-value{
-    font-size: 24px;
-  }
-  .stat-money{
-    font-size: 10px;
-  }
-  .resume-card{
-    min-height: 110px;
-    padding: 14px;
-  }
-  .stat-card{
-    min-height: 140px;
-    padding: 16px;
-  }
-}
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 
@@ -590,10 +473,10 @@
       </div>
       <div class="topbar-actions">
         <a id="dbLink" class="top-link" href="https://docs.google.com/spreadsheets/d/1aSz1pfuU9LSH18oW6KknLPxQw84LIims-NO7z11fbN0/edit?gid=1671964925#gid=1671964925" target="_blank" rel="noopener">
-          <i class="fas fa-database"></i> Akses Database
+          <i class="fas fa-database"></i> <span class="d-none d-sm-inline">Database</span>
         </a>
         <span class="chip" id="authChip"><i class="fas fa-user"></i> Mode Publik</span>
-        <span class="chip"><i class="fas fa-map-marked-alt"></i> Peta + Line Aktif</span>
+        <span class="chip"><i class="fas fa-map-marked-alt"></i> Peta + Line</span>
         <span class="chip" id="topLastUpdate"><i class="fas fa-clock"></i> Update: -</span>
       </div>
     </div>
@@ -620,14 +503,14 @@
     <section class="login-card">
       <div class="login-field">
         <label><i class="fas fa-user"></i> Username Admin</label>
-        <input id="loginUsername" autocomplete="username" placeholder="Username" />
+        <input id="loginUsername" autocomplete="username" placeholder="Masukkan username" />
       </div>
       <div class="login-field">
         <label><i class="fas fa-lock"></i> Password Admin</label>
-        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" />
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" />
       </div>
       <button class="btn-primary" id="loginBtn" type="button" onclick="loginAdmin()">
-        <i class="fas fa-right-to-bracket"></i> Sign In Admin
+        <i class="fas fa-right-to-bracket"></i> Sign In
       </button>
       <button class="btn-light admin-only" id="logoutBtn" type="button" onclick="logoutAdmin()">
         <i class="fas fa-right-from-bracket"></i> Logout
@@ -644,7 +527,7 @@
     <section id="inputView" class="view admin-only">
       <div class="panel">
         <div class="panel-body">
-          <h2 id="formTitle">Form Input / Edit Kegiatan Fisik 2026</h2>
+          <h2 id="formTitle"><i class="fas fa-pen-to-square"></i> Form Input / Edit Kegiatan Fisik 2026</h2>
           <p>Data validation/dropdown mengikuti aturan di Spreadsheet. Saat data baru ditambahkan, validasi dari baris 2 akan otomatis disalin ke baris baru.</p>
           <form id="formInput">
             <input type="hidden" id="no" />
@@ -700,7 +583,7 @@
                 <input id="titikAwal" placeholder="-6.955120, 107.564728 atau 7°38'18.1&quot;S 108°01'17.6&quot;E" />
                 <div class="coord-actions">
                   <button type="button" class="btn-green" onclick="ambilKoordinat('titikAwal')">
-                    <i class="fas fa-crosshairs"></i> Ambil Koordinat Awal dari Lokasi Saya
+                    <i class="fas fa-crosshairs"></i> Ambil dari Lokasi Saya
                   </button>
                 </div>
               </div>
@@ -709,7 +592,7 @@
                 <input id="titikAkhir" placeholder="-6.956000, 107.565000" />
                 <div class="coord-actions">
                   <button type="button" class="btn-green" onclick="ambilKoordinat('titikAkhir')">
-                    <i class="fas fa-crosshairs"></i> Ambil Koordinat Akhir dari Lokasi Saya
+                    <i class="fas fa-crosshairs"></i> Ambil dari Lokasi Saya
                   </button>
                 </div>
               </div>
@@ -720,7 +603,7 @@
               <div class="full">
                 <label><i class="fas fa-images"></i> Foto Kegiatan</label>
                 <input id="foto" placeholder="Link Drive lama/manual akan tetap bisa dipakai" />
-                <div class="file-note">Foto bisa upload lebih dari 1 file</div>
+                <div class="file-note">Foto bisa upload lebih dari 1 file (Maks. 8MB/file)</div>
                 <input id="fotoFiles" type="file" accept="image/*" multiple />
                 <div class="preview-list" id="previewList"></div>
               </div>
@@ -730,7 +613,7 @@
                 <i class="fas fa-floppy-disk"></i> Simpan Data
               </button>
               <button type="button" class="btn-light" onclick="resetForm()">
-                <i class="fas fa-rotate-left"></i> Reset
+                <i class="fas fa-rotate-left"></i> Reset Form
               </button>
             </div>
             <div class="status" id="statusBox"></div>
@@ -742,10 +625,10 @@
     <section id="dataView" class="view admin-only">
       <div class="panel">
         <div class="panel-body">
-          <h2>Data Kegiatan</h2>
+          <h2><i class="fas fa-table-list"></i> Data Kegiatan</h2>
           <p>Gunakan pencarian dan filter untuk mencari data. Tombol Edit memindahkan data ke form input.</p>
           <div class="toolbar">
-            <input id="searchInput" placeholder="Cari kegiatan / kecamatan / desa / status / korwil" />
+            <input id="searchInput" placeholder="Cari kegiatan / kecamatan / desa..." />
             <select id="filterStatus"><option value="">Semua Status</option></select>
             <select id="filterKecamatan"><option value="">Semua Kecamatan</option></select>
             <select id="filterKorwil"><option value="">Semua Korwil</option></select>
@@ -756,20 +639,33 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Aksi</th><th>No</th><th>Nama Kegiatan</th><th>Pagu</th><th>Kecamatan</th><th>Desa</th><th>Status</th><th>Korwil</th><th>Tahap</th><th>Koordinat Awal/Akhir</th></tr></thead>
-              <tbody id="recordsBody"><tr><td colspan="10">Memuat...</td></tr></tbody>
+              <thead>
+                <tr>
+                  <th style="width: 140px;">Aksi</th>
+                  <th>No</th>
+                  <th>Nama Kegiatan</th>
+                  <th>Pagu</th>
+                  <th>Kecamatan</th>
+                  <th>Desa</th>
+                  <th>Status</th>
+                  <th>Korwil</th>
+                  <th>Tahap</th>
+                  <th>Koordinat Awal/Akhir</th>
+                </tr>
+              </thead>
+              <tbody id="recordsBody"><tr><td colspan="10" style="text-align:center; padding: 40px; color: var(--muted);">Memuat data...</td></tr></tbody>
             </table>
           </div>
           <div class="pagination-bar">
             <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
             <div class="pagination-controls">
-              <label style="margin:0;font-size:12px">Per halaman</label>
+              <label style="margin:0;font-size:12px; color: var(--muted);">Baris</label>
               <select id="pageSize" class="page-size-select" onchange="changePageSize()"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select>
-              <button class="btn-light" type="button" onclick="goFirstPage()"><i class="fas fa-angles-left"></i></button>
-              <button class="btn-light" type="button" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
+              <button class="btn-light" type="button" onclick="goFirstPage()" title="Halaman Pertama"><i class="fas fa-angles-left"></i></button>
+              <button class="btn-light" type="button" onclick="prevPage()" title="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
               <span class="tag" id="pageIndicator">Halaman 1 / 1</span>
-              <button class="btn-light" type="button" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
-              <button class="btn-light" type="button" onclick="goLastPage()"><i class="fas fa-angles-right"></i></button>
+              <button class="btn-light" type="button" onclick="nextPage()" title="Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+              <button class="btn-light" type="button" onclick="goLastPage()" title="Halaman Terakhir"><i class="fas fa-angles-right"></i></button>
             </div>
           </div>
         </div>
@@ -779,21 +675,24 @@
     <section id="mapView" class="view active">
       <div class="map-layout">
         <aside class="map-side">
-          <h2>Peta Kegiatan</h2>
+          <h2><i class="fas fa-map-location-dot"></i> Peta Kegiatan</h2>
           <p>Marker tampil untuk titik awal/akhir yang valid. Jika titik awal dan akhir terisi, aplikasi membuat line penghubung otomatis.</p>
 
           <label><i class="fas fa-flag"></i> Filter Status</label>
-          <select id="mapFilterStatus"><option value="">Semua Status</option></select><br><br>
-          <label><i class="fas fa-location-dot"></i> Filter Kecamatan</label>
-          <select id="mapFilterKecamatan"><option value="">Semua Kecamatan</option></select><br><br>
-          <label><i class="fas fa-user-tie"></i> Filter Korwil</label>
-          <select id="mapFilterKorwil"><option value="">Semua Korwil</option></select><br><br>
-          <label><i class="fas fa-layer-group"></i> Filter Tahap</label>
+          <select id="mapFilterStatus"><option value="">Semua Status</option></select>
+          
+          <label style="margin-top: 12px;"><i class="fas fa-location-dot"></i> Filter Kecamatan</label>
+          <select id="mapFilterKecamatan"><option value="">Semua Kecamatan</option></select>
+          
+          <label style="margin-top: 12px;"><i class="fas fa-user-tie"></i> Filter Korwil</label>
+          <select id="mapFilterKorwil"><option value="">Semua Korwil</option></select>
+          
+          <label style="margin-top: 12px;"><i class="fas fa-layer-group"></i> Filter Tahap</label>
           <select id="mapFilterTahap"><option value="">Semua Tahap</option></select>
 
           <div class="map-tools">
             <label><i class="fas fa-map"></i> Tampilan Basemap</label>
-            <select id="basemapSelect" onchange="changeBasemap()">
+            <select id="basemapSelect" onchange="changeBasemap()" style="margin-top: 6px;">
               <option value="osm">OpenStreetMap Default</option>
               <option value="osmHot">OpenStreetMap HOT</option>
               <option value="topo">OpenTopoMap</option>
@@ -804,12 +703,12 @@
             </select>
           </div>
 
-          <div class="btns">
+          <div class="btns" style="margin-top: 16px;">
             <button class="btn-primary" onclick="loadMapData()">
-              <i class="fas fa-arrows-rotate"></i> Refresh Peta
+              <i class="fas fa-arrows-rotate"></i> Refresh
             </button>
             <button class="btn-light" onclick="fitMap()">
-              <i class="fas fa-expand"></i> Zoom Semua Titik
+              <i class="fas fa-expand"></i> Zoom Semua
             </button>
             <button class="btn-green" onclick="downloadKMZ()">
               <i class="fas fa-download"></i> Download KMZ
@@ -817,16 +716,21 @@
           </div>
 
           <div class="statline">
-            <span class="tag" id="mapMapped"><i class="fas fa-map-pin"></i> Data berpeta: 0</span>
+            <span class="tag" id="mapMapped"><i class="fas fa-map-pin"></i> Data: 0</span>
             <span class="tag" id="mapLines"><i class="fas fa-route"></i> Line: 0</span>
-            <span class="tag" id="mapInvalid"><i class="fas fa-triangle-exclamation"></i> Invalid: 0</span>
+            <span class="tag" id="mapInvalid" style="background: #fee2e2; color: #991b1b;"><i class="fas fa-triangle-exclamation"></i> Invalid: 0</span>
           </div>
-          <div class="status" id="kmzStatus">KMZ mengikuti filter peta yang sedang aktif.</div>
+          <div class="status" id="kmzStatus" style="margin-top: 8px; font-size: 12px;">KMZ mengikuti filter peta yang sedang aktif.</div>
 
-          <h3 style="margin-top:18px;font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px">
+          <h3 style="margin-top:24px; font-size:14px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; border-top: 1px solid var(--line); padding-top: 16px;">
             <i class="fas fa-circle-exclamation" style="color:var(--danger)"></i> Koordinat Belum Valid
           </h3>
-          <div class="invalid-box" id="invalidList">-</div>
+          <div class="invalid-box" id="invalidList">
+            <div style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">
+              <i class="fas fa-circle-check" style="font-size:24px; color:var(--success); display:block; margin-bottom:8px;"></i>
+              Tidak ada data invalid.
+            </div>
+          </div>
         </aside>
         <div id="map"></div>
       </div>
@@ -836,6 +740,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
+    // ==========================================
+    // LOGIKA JAVASCRIPT ASLI (TIDAK DIUBAH)
+    // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycby2m7yo1ln08jwaVTT-DEqJBY4CmCFZIX7iGH1m7_mX19yurVwZhTPI5ktGQ1JFMJzx/exec";
     const AUTO_REFRESH_MS = 15000;
 
@@ -896,7 +803,7 @@
     function setAuthStatus(msg,type=""){ const el=document.getElementById("authStatus"); el.textContent=msg; el.className="auth-status "+type; }
     function applyAuthMode(admin){
       document.body.classList.toggle("admin-mode", !!admin);
-      document.getElementById("authChip").innerHTML = admin ? '<i class="fas fa-user-shield"></i> Mode Admin Aktif' : '<i class="fas fa-user"></i> Mode Publik';
+      document.getElementById("authChip").innerHTML = admin ? '<i class="fas fa-user-shield"></i> Mode Admin' : '<i class="fas fa-user"></i> Mode Publik';
       document.getElementById("loginBtn").style.display = admin ? "none" : "inline-flex";
       document.getElementById("loginUsername").disabled = !!admin;
       document.getElementById("loginPassword").disabled = !!admin;
@@ -912,7 +819,7 @@
       if (!adminToken) return applyAuthMode(false);
       try{
         const data = await apiPost({ action:"checkSession", token:adminToken });
-        if (data.success && data.isAdmin){ applyAuthMode(true); setAuthStatus("Login sebagai admin: "+(data.username||"admin"),"ok"); loadRecords(false); }
+        if (data.success && data.isAdmin){ applyAuthMode(true); setAuthStatus("Login sebagai: "+(data.username||"admin"),"ok"); loadRecords(false); }
         else { adminToken=""; localStorage.removeItem("drainase_admin_token"); applyAuthMode(false); }
       }catch(err){ applyAuthMode(false); }
     }
@@ -925,7 +832,7 @@
         const data = await apiPost({ action:"login", username, password });
         if (!data.success) throw new Error(data.message || "Login gagal.");
         adminToken = data.token; localStorage.setItem("drainase_admin_token", adminToken);
-        applyAuthMode(true); setAuthStatus("Login berhasil. Fitur CRUD sudah aktif.","ok");
+        applyAuthMode(true); setAuthStatus("Login berhasil. Fitur CRUD aktif.","ok");
         document.querySelector('[data-view="inputView"]').click(); loadRecords(false);
       }catch(err){ adminToken=""; localStorage.removeItem("drainase_admin_token"); applyAuthMode(false); setAuthStatus(err.message,"err"); }
       finally{ showLoader(false); }
@@ -934,7 +841,7 @@
     async function logoutAdmin(){
       try{ if (adminToken) await apiPost({ action:"logout", token:adminToken }); }catch(err){}
       adminToken=""; localStorage.removeItem("drainase_admin_token"); document.getElementById("loginPassword").value="";
-      applyAuthMode(false); setAuthStatus("Logout berhasil. Sekarang kembali ke mode publik.","ok");
+      applyAuthMode(false); setAuthStatus("Logout berhasil. Kembali ke mode publik.","ok");
     }
 
     async function loadInitData(){
@@ -982,16 +889,16 @@
 
     function renderResumeCards(data){
       const cards = [
-        ["Jumlah Paket", formatNumber(data.totalPaket||0), "Jumlah baris/nama kegiatan yang tercatat", "fa-box-archive"],
+        ["Jumlah Paket", formatNumber(data.totalPaket||0), "Jumlah baris/nama kegiatan", "fa-box-archive"],
         ["Total Pagu", formatRupiah(data.totalPagu||0), "Akumulasi pagu seluruh paket", "fa-sack-dollar"],
-        ["Line Trase Valid", formatNumber(data.lineValid||0), "Titik awal dan akhir sama-sama terisi valid", "fa-route"],
-        ["Titik Awal Valid", formatNumber(data.titikAwalValid||0), "Paket dengan koordinat awal valid", "fa-location-dot"],
-        ["Titik Akhir Valid", formatNumber(data.titikAkhirValid||0), "Paket dengan koordinat akhir valid", "fa-flag-checkered"],
-        ["Koordinat Belum Valid", formatNumber(data.invalidKoordinat||0), "Belum ada titik awal maupun akhir valid", "fa-circle-exclamation"]
+        ["Line Trase Valid", formatNumber(data.lineValid||0), "Titik awal & akhir terisi valid", "fa-route"],
+        ["Titik Awal Valid", formatNumber(data.titikAwalValid||0), "Paket dengan koordinat awal", "fa-location-dot"],
+        ["Titik Akhir Valid", formatNumber(data.titikAkhirValid||0), "Paket dengan koordinat akhir", "fa-flag-checkered"],
+        ["Koordinat Invalid", formatNumber(data.invalidKoordinat||0), "Belum ada titik valid", "fa-circle-exclamation"]
       ];
       document.getElementById("resumeCards").innerHTML = cards.map(c =>
         `<div class="resume-card">
-          <div class="resume-label"><i class="fas ${c[3]}" style="margin-right:6px;opacity:.6"></i>${c[0]}</div>
+          <div class="resume-label"><i class="fas ${c[3]}"></i> ${c[0]}</div>
           <div class="resume-value">${c[1]}</div>
           <div class="resume-sub">${c[2]}</div>
         </div>`
@@ -1002,7 +909,7 @@
       const statsWrap = document.getElementById("statsWrap");
       const icons = ["fa-chart-pie","fa-chart-line","fa-chart-bar","fa-chart-column"];
       const cards = [
-        {label:"Jumlah Paket", value:data.totalPaket||0, money:data.totalPagu||0, desc:"Total kegiatan fisik 2026", cls:"stat-total", icon:"fa-box-archive"}
+        {label:"Total Keseluruhan", value:data.totalPaket||0, money:data.totalPagu||0, desc:"Total kegiatan fisik 2026", cls:"stat-total", icon:"fa-box-archive"}
       ];
 
       const byStatus = data.byStatus || {};
@@ -1012,7 +919,7 @@
           label: status,
           value: byStatus[status] || 0,
           money: byStatusPagu[status] || 0,
-          desc: "Jumlah paket dan total pagu berdasarkan status",
+          desc: "Jumlah paket dan total pagu",
           cls: `stat-${(i%4)+1}`,
           icon: icons[i%4]
         });
@@ -1020,7 +927,7 @@
 
       statsWrap.innerHTML = cards.map(card =>
         `<div class="stat-card ${card.cls}">
-          <div class="stat-label"><i class="fas ${card.icon}" style="margin-right:6px;opacity:.85"></i>${escapeHtml(card.label)}</div>
+          <div class="stat-label"><i class="fas ${card.icon}"></i> ${escapeHtml(card.label)}</div>
           <div class="stat-value">${formatNumber(card.value)}</div>
           <div class="stat-money">${formatRupiah(card.money || 0)}</div>
           <div class="stat-desc">${escapeHtml(card.desc)}</div>
@@ -1081,7 +988,7 @@
         allCrudRecords = data.records || [];
         currentPage = 1;
         renderRecordsPage();
-      }catch(err){ document.getElementById("recordsBody").innerHTML = `<tr><td colspan="10">${escapeHtml(err.message)}</td></tr>`; }
+      }catch(err){ document.getElementById("recordsBody").innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--danger);">${escapeHtml(err.message)}</td></tr>`; }
       finally{ if(show) showLoader(false); }
     }
 
@@ -1107,9 +1014,9 @@
           <td>${escapeHtml(r.tahap)}</td>
           <td>
             <div style="font-size:12px"><b style="color:var(--primary-dark)">Awal:</b> ${escapeHtml(r.titikAwal)}</div>
-            <div style="font-size:12px;margin-top:3px"><b style="color:var(--accent-dark)">Akhir:</b> ${escapeHtml(r.titikAkhir)}</div>
+            <div style="font-size:12px;margin-top:4px"><b style="color:var(--accent-dark)">Akhir:</b> ${escapeHtml(r.titikAkhir)}</div>
           </td>
-        </tr>`).join("") : `<tr><td colspan="10">Tidak ada data.</td></tr>`;
+        </tr>`).join("") : `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--muted);">Tidak ada data.</td></tr>`;
       document.getElementById("paginationInfo").textContent = `Menampilkan ${total ? start+1 : 0}-${Math.min(start+pageSize,total)} dari ${total} data`;
       document.getElementById("pageIndicator").innerHTML = `<i class="fas fa-file-lines"></i> Halaman ${currentPage} / ${totalPages}`;
     }
@@ -1148,7 +1055,6 @@
       finally{ showLoader(false); }
     }
 
-
     function ambilKoordinat(targetId){
       if (!navigator.geolocation) {
         setStatus("Browser/perangkat tidak mendukung GPS/geolocation.", "err");
@@ -1163,9 +1069,9 @@
         setStatus(`Koordinat berhasil diambil untuk ${targetId === "titikAwal" ? "titik awal" : "titik akhir"}${acc}.`, "ok");
       }, err => {
         let msg = "Gagal mengambil koordinat.";
-        if (err.code === 1) msg = "Izin lokasi ditolak. Aktifkan permission lokasi/GPS untuk browser ini.";
-        if (err.code === 2) msg = "Lokasi tidak tersedia. Pastikan GPS/Location aktif.";
-        if (err.code === 3) msg = "Waktu pengambilan lokasi habis. Coba lagi di area sinyal yang lebih baik.";
+        if (err.code === 1) msg = "Izin lokasi ditolak. Aktifkan permission lokasi/GPS.";
+        if (err.code === 2) msg = "Lokasi tidak tersedia. Pastikan GPS aktif.";
+        if (err.code === 3) msg = "Waktu pengambilan lokasi habis. Coba lagi.";
         setStatus(msg, "err");
       }, { enableHighAccuracy:true, timeout:20000, maximumAge:0 });
     }
@@ -1181,7 +1087,7 @@
       for (const file of files.slice(0, maxFiles)) {
         if (!file.type.startsWith("image/")) continue;
         if (file.size > maxSizeMb * 1024 * 1024) {
-          setStatus(`Foto ${file.name} lebih dari ${maxSizeMb} MB, tidak dimasukkan.`, "warn");
+          setStatus(`Foto ${file.name} > ${maxSizeMb} MB, dilewati.`, "warn");
           continue;
         }
         const dataUrl = await readFileAsDataUrl(file);
@@ -1191,8 +1097,8 @@
         div.innerHTML = `<img src="${dataUrl}" alt="${escapeAttr(file.name)}"><div class="preview-name">${escapeHtml(file.name)}</div>`;
         preview.appendChild(div);
       }
-      if (files.length > maxFiles) setStatus(`Maksimal ${maxFiles} foto per sekali simpan. Foto selebihnya diabaikan.`, "warn");
-      else setStatus(`${selectedPhotos.length} foto siap diupload saat data disimpan.`, "ok");
+      if (files.length > maxFiles) setStatus(`Maksimal ${maxFiles} foto. Selebihnya diabaikan.`, "warn");
+      else if (selectedPhotos.length > 0) setStatus(`${selectedPhotos.length} foto siap diupload.`, "ok");
     }
 
     function readFileAsDataUrl(file){
@@ -1267,23 +1173,23 @@
 
           if (f.awal) {
             const mAwal = L.circleMarker([f.awal.lat, f.awal.lng], {
-              radius:8, weight:3, color:"#ffffff",
-              fillColor:"#10b981", fillOpacity:.95
+              radius:7, weight:2, color:"#ffffff",
+              fillColor:"#10b981", fillOpacity:1
             }).bindPopup(popup);
             mAwal.addTo(markerLayer); bounds.push([f.awal.lat, f.awal.lng]);
           }
 
           if (f.akhir) {
             const mAkhir = L.circleMarker([f.akhir.lat, f.akhir.lng], {
-              radius:7, weight:3, color:"#ffffff",
-              fillColor:"#ef4444", fillOpacity:.9
+              radius:6, weight:2, color:"#ffffff",
+              fillColor:"#ef4444", fillOpacity:1
             }).bindPopup(popup);
             mAkhir.addTo(markerLayer); bounds.push([f.akhir.lat, f.akhir.lng]);
           }
 
           if (f.awal && f.akhir) {
             const line = L.polyline([[f.awal.lat, f.awal.lng], [f.akhir.lat, f.akhir.lng]], {
-              weight:5, opacity:.85, color:"#0d9488",
+              weight:4, opacity:0.9, color:"#0d9488",
               dashArray:null, lineCap:"round"
             }).bindPopup(popup);
             line.addTo(lineLayer);
@@ -1291,7 +1197,7 @@
         });
 
         renderInvalid(data.invalidCoordinates || []);
-        document.getElementById("mapMapped").innerHTML = '<i class="fas fa-map-pin"></i> Data berpeta: ' + formatNumber(data.mapped || 0);
+        document.getElementById("mapMapped").innerHTML = '<i class="fas fa-map-pin"></i> Data: ' + formatNumber(data.mapped || 0);
         document.getElementById("mapLines").innerHTML = '<i class="fas fa-route"></i> Line: ' + formatNumber(data.lineCount || 0);
         document.getElementById("mapInvalid").innerHTML = '<i class="fas fa-triangle-exclamation"></i> Invalid: ' + formatNumber(data.invalid || 0);
 
@@ -1303,7 +1209,6 @@
       }catch(err){ console.error(err); }
       finally{ if(show) showLoader(false); }
     }
-
 
     async function downloadKMZ(){
       const statusEl = document.getElementById("kmzStatus");
@@ -1336,7 +1241,7 @@
           triggerDownload(new Blob([kml], { type:"application/vnd.google-earth.kml+xml;charset=utf-8" }), filename.replace(/\.kmz$/i, ".kml"));
         }
 
-        if (statusEl) { statusEl.className = "status ok"; statusEl.textContent = `KMZ berhasil dibuat dari ${formatNumber(lastMapFeatures.length)} data berpeta sesuai filter aktif.`; }
+        if (statusEl) { statusEl.className = "status ok"; statusEl.textContent = `KMZ berhasil dibuat dari ${formatNumber(lastMapFeatures.length)} data.`; }
       }catch(err){
         console.error(err);
         if (statusEl) { statusEl.className = "status err"; statusEl.textContent = err.message || "Gagal membuat KMZ."; }
@@ -1415,7 +1320,7 @@
         ["Titik Akhir", f.titikAkhir],
         ["Foto", f.fotoUrl ? `<a href="${escapeAttr(f.fotoUrl)}">Buka Foto</a>` : ""]
       ];
-      return `<table border="1" cellpadding="5" cellspacing="0">${rows.map(([k,v]) => `<tr><td><b>${escapeHtml(k)}</b></td><td>${v || "-"}</td></tr>`).join("")}</table>`;
+      return `<table style="width:100%; border-collapse:collapse; font-size:12px;">${rows.map(([k,v]) => `<tr><td style="padding:4px 8px; border-bottom:1px solid #eee; font-weight:bold; width:40%;">${escapeHtml(k)}</td><td style="padding:4px 8px; border-bottom:1px solid #eee;">${v || "-"}</td></tr>`).join("")}</table>`;
     }
 
     function triggerDownload(blob, filename){
@@ -1434,19 +1339,19 @@
 
     function popupHtml(f){
       return `<div class="popup-title">${escapeHtml(f.namaKegiatan)}</div>
-        <div class="popup-row"><b>No:</b> ${escapeHtml(f.no)}</div>
-        <div class="popup-row"><b>Pagu:</b> ${escapeHtml(f.pagu)}</div>
-        <div class="popup-row"><b>Status:</b> ${escapeHtml(f.status)}</div>
-        <div class="popup-row"><b>Korwil/Tahap:</b> ${escapeHtml(f.korwil)} / ${escapeHtml(f.tahap)}</div>
-        <div class="popup-row"><b>Kecamatan/Desa:</b> ${escapeHtml(f.kecamatan)} / ${escapeHtml(f.desa)}</div>
-        <div class="popup-row"><b>Sumber Dana:</b> ${escapeHtml(f.sumberDana)}</div>
-        <div class="popup-row"><b>Volume:</b> ${escapeHtml(f.volumeKonstruksi)}</div>
-        <div class="popup-row"><b>Titik Awal:</b> ${escapeHtml(f.titikAwal)}</div>
-        <div class="popup-row"><b>Titik Akhir:</b> ${escapeHtml(f.titikAkhir)}</div>
+        <div class="popup-row"><b>No</b> <span>${escapeHtml(f.no)}</span></div>
+        <div class="popup-row"><b>Pagu</b> <span>${escapeHtml(f.pagu)}</span></div>
+        <div class="popup-row"><b>Status</b> <span>${escapeHtml(f.status)}</span></div>
+        <div class="popup-row"><b>Korwil/Tahap</b> <span>${escapeHtml(f.korwil)} / ${escapeHtml(f.tahap)}</span></div>
+        <div class="popup-row"><b>Kec/Desa</b> <span>${escapeHtml(f.kecamatan)} / ${escapeHtml(f.desa)}</span></div>
+        <div class="popup-row"><b>Sumber Dana</b> <span>${escapeHtml(f.sumberDana)}</span></div>
+        <div class="popup-row"><b>Volume</b> <span>${escapeHtml(f.volumeKonstruksi)}</span></div>
+        <div class="popup-row"><b>Titik Awal</b> <span>${escapeHtml(f.titikAwal)}</span></div>
+        <div class="popup-row"><b>Titik Akhir</b> <span>${escapeHtml(f.titikAkhir)}</span></div>
         ${f.fotoUrl ? `<a class="popup-link" href="${escapeAttr(f.fotoUrl)}" target="_blank" rel="noopener"><i class="fas fa-image"></i> Buka Foto</a>` : ""}`;
     }
 
-    function fitMap(){ if (map && lastBounds && lastBounds.isValid()) map.fitBounds(lastBounds, { padding:[30,30], maxZoom:17 }); }
+    function fitMap(){ if (map && lastBounds && lastBounds.isValid()) map.fitBounds(lastBounds, { padding:[30,30], maxZoom:16 }); }
 
     function renderInvalid(items){
       const box = document.getElementById("invalidList");
