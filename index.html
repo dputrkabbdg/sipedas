@@ -460,29 +460,29 @@
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     /* ============ SUB KEGIATAN CARDS ============ */
-.sub-kegiatan-section { margin-top: 32px; }
-.sub-kegiatan-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.sub-kegiatan-title i { color: var(--primary); }
-.sub-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .sub-kegiatan-section { margin-top: 32px; }
+    .sub-kegiatan-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .sub-kegiatan-title i { color: var(--primary); }
+    .sub-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
 
-.sub-card {
-  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
-  padding: 20px; box-shadow: var(--shadow); transition: all 0.25s ease;
-  display: flex; flex-direction: column;
-}
-.sub-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
+    .sub-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
+      padding: 20px; box-shadow: var(--shadow); transition: all 0.25s ease;
+      display: flex; flex-direction: column;
+    }
+    .sub-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
 
-.sub-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.sub-card-name { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.3; flex: 1; margin-right: 8px; }
-.sub-card-badge { background: var(--primary-soft); color: var(--primary-dark); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .sub-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .sub-card-name { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.3; flex: 1; margin-right: 8px; }
+    .sub-card-badge { background: var(--primary-soft); color: var(--primary-dark); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 
-.sub-card-pagu { font-size: 18px; font-weight: 800; color: var(--accent-dark); margin-bottom: 16px; letter-spacing: -0.02em; }
+    .sub-card-pagu { font-size: 18px; font-weight: 800; color: var(--accent-dark); margin-bottom: 16px; letter-spacing: -0.02em; }
 
-.sub-status-list { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--line); }
-.sub-status-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-.sub-status-name { color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 8px; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.sub-status-count { font-weight: 700; color: var(--text); background: var(--bg-alt); padding: 3px 8px; border-radius: 6px; font-size: 11px; }
+    .sub-status-list { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--line); }
+    .sub-status-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .sub-status-name { color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .sub-status-count { font-weight: 700; color: var(--text); background: var(--bg-alt); padding: 3px 8px; border-radius: 6px; font-size: 11px; }
   </style>
 </head>
 
@@ -525,7 +525,7 @@
 
     <section class="stats" id="statsWrap"></section>
 
-        <!-- BARU: Section Resume Per Sub Kegiatan -->
+    <!-- BARU: Section Resume Per Sub Kegiatan -->
     <section class="sub-kegiatan-section">
       <h2 class="sub-kegiatan-title">
         <i class="fas fa-diagram-project"></i> Resume Progress Per Sub Kegiatan
@@ -576,8 +576,8 @@
                 <input id="pagu" placeholder="Masukan Angka" />
               </div>
               <div>
-                <label><i class="fas fa-folder-tree"></i> Program</label>
-                <select id="program"></select>
+                <label><i class="fas fa-folder-tree"></i> Sub Kegiatan</label>
+                <select id="subKegiatan"></select>
               </div>
               <div>
                 <label><i class="fas fa-location-dot"></i> Kecamatan</label>
@@ -776,7 +776,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
     // ==========================================
-    // LOGIKA JAVASCRIPT ASLI (TIDAK DIUBAH)
+    // LOGIKA JAVASCRIPT
     // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycby2m7yo1ln08jwaVTT-DEqJBY4CmCFZIX7iGH1m7_mX19yurVwZhTPI5ktGQ1JFMJzx/exec";
     const AUTO_REFRESH_MS = 15000;
@@ -886,15 +886,15 @@
         if (!data.success) throw new Error(data.message || "Gagal memuat data awal.");
         document.getElementById("dbLink").href = data.databaseUrl || document.getElementById("dbLink").href;
 
-          console.log("Dropdown data:", data.dropdowns);
-    console.log("Sub Kegiatan options:", data.dropdowns.subKegiatan);
+        console.log("Dropdown data:", data.dropdowns);
+        console.log("Sub Kegiatan options:", data.dropdowns.subKegiatan);
 
         fillSelect("sumberDana", data.dropdowns.sumberDana || [], "Pilih Sumber Dana");
         fillSelect("asalUsulan", data.dropdowns.asalUsulan || [], "Pilih Asal Usulan");
         fillSelect("status", data.dropdowns.status || [], "Pilih Status");
         fillSelect("korwil", data.dropdowns.korwil || [], "Pilih Korwil");
         fillSelect("tahap", data.dropdowns.tahap || [], "Pilih Tahap");
-        fillSelect("program", data.dropdowns.program || [], "Pilih Program");
+        fillSelect("subKegiatan", data.dropdowns.subKegiatan || [], "Pilih Sub Kegiatan");
 
         fillFilter("filterStatus", data.dropdowns.status || [], "Semua Status");
         fillFilter("filterKecamatan", data.dropdowns.kecamatan || [], "Semua Kecamatan");
@@ -918,10 +918,10 @@
 
     async function loadDashboard(){ try{ const data = await apiGet("getDashboard"); if(data.success) renderDashboard(data); }catch(err){} }
 
-       function renderDashboard(data){
+    function renderDashboard(data){
       renderResumeCards(data);
       renderStats(data);
-      renderSubKegiatanStats(data); // <-- BARU: Tambahkan baris ini
+      renderSubKegiatanStats(data);
       
       const updateText = "Update: " + (data.lastUpdate || "-");
       document.getElementById("topLastUpdate").innerHTML = '<i class="fas fa-clock"></i> ' + updateText;
@@ -975,29 +975,26 @@
       ).join("");
     }
 
-        function renderSubKegiatanStats(data) {
+    function renderSubKegiatanStats(data) {
       const board = document.getElementById("subKegiatanBoard");
       if (!data.bySubKegiatan || Object.keys(data.bySubKegiatan).length === 0) {
         board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); background: var(--card); border-radius: var(--radius-lg); border: 1px dashed var(--line);"><i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>Belum ada data Sub Kegiatan yang tercatat.</div>';
         return;
       }
 
-      // Urutkan berdasarkan jumlah total kegiatan (terbanyak di atas)
       const sortedSubs = Object.entries(data.bySubKegiatan).sort((a, b) => b[1].total - a[1].total);
 
-      // Definisi warna untuk status progres
       const statusColors = {
-        'Persiapan': '#f59e0b',      // Kuning
-        'Pengadaan': '#0ea5e9',      // Biru
-        'Berkontrak': '#8b5cf6',     // Ungu
-        'Pelaksanaan': '#3b82f6',    // Biru Tua
-        'Selesai': '#10b981',        // Hijau
-        'Belum Diisi': '#94a3b8',    // Abu-abu
-        'default': '#64748b'         // Fallback
+        'Persiapan': '#f59e0b',
+        'Pengadaan': '#0ea5e9',
+        'Berkontrak': '#8b5cf6',
+        'Pelaksanaan': '#3b82f6',
+        'Selesai': '#10b981',
+        'Belum Diisi': '#94a3b8',
+        'default': '#64748b'
       };
 
       board.innerHTML = sortedSubs.map(([subName, subData]) => {
-        // Urutkan status di dalam sub kegiatan berdasarkan jumlah terbanyak
         const statusEntries = Object.entries(subData.statuses).sort((a, b) => b[1] - a[1]);
         
         const statusHtml = statusEntries.map(([status, count]) => {
@@ -1046,7 +1043,7 @@
         titikAkhir: val("titikAkhir"),
         volumeKonstruksi: val("volumeKonstruksi"),
         foto: val("foto"),
-        program: val("program"),
+        subKegiatan: val("subKegiatan"),
         photos: selectedPhotos
       };
     }
@@ -1129,7 +1126,7 @@
         setVal("no", r.no); setVal("namaKegiatan", r.namaKegiatan); setVal("pagu", r.pagu); setVal("kecamatan", r.kecamatan); setVal("desa", r.desa);
         setVal("sumberDana", r.sumberDana); setVal("asalUsulan", r.asalUsulan); setVal("status", r.status); setVal("korwil", r.korwil); setVal("tahap", r.tahap);
         setVal("ketTambahan", r.ketTambahan); setVal("titikAwal", r.titikAwal); setVal("titikAkhir", r.titikAkhir); setVal("volumeKonstruksi", r.volumeKonstruksi);
-        setVal("foto", r.foto); setVal("program", r.program);
+        setVal("foto", r.foto); setVal("subKegiatan", r.subKegiatan);
         document.getElementById("formTitle").innerHTML = '<i class="fas fa-pen-to-square"></i> Edit Data No. ' + r.no;
         document.querySelector('[data-view="inputView"]').click();
         setStatus("Mode edit aktif.","ok");
@@ -1407,7 +1404,7 @@
         ["Desa", f.desa],
         ["Sumber Dana", f.sumberDana],
         ["Asal Usulan", f.asalUsulan],
-        ["Program", f.program],
+        ["Sub Kegiatan", f.subKegiatan],
         ["Volume/Konstruksi", f.volumeKonstruksi],
         ["Titik Awal", f.titikAwal],
         ["Titik Akhir", f.titikAkhir],
