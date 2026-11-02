@@ -189,6 +189,168 @@
     .sub-status-name { color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 8px; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .sub-status-count { font-weight: 700; color: var(--text); background: var(--bg-alt); padding: 3px 8px; border-radius: 6px; font-size: 11px; }
+
+    /* Perbaikan tampilan nilai uang agar lebih jelas dan bold */
+/* =====================================================
+   STYLE RESUME SUB KEGIATAN - VERSI TERPADU
+===================================================== */
+
+.sub-card-pagu {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--accent-dark);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(13, 148, 136, 0.15);
+  padding: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(13, 148, 136, 0.05),
+    rgba(14, 165, 233, 0.05)
+  );
+  border-radius: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+.sub-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+
+.sub-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.sub-status-item:last-child {
+  border-bottom: none;
+}
+
+.sub-status-name {
+  color: var(--text-soft);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sub-status-count {
+  font-weight: 800;
+  color: var(--text);
+  background: var(--bg-alt);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  min-width: 70px;
+  text-align: center;
+}
+
+.sub-status-money {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  display: block;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* Perbaikan tampilan toolbar */
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(5, minmax(120px, 0.8fr)) auto auto;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1200px) {
+  .toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mempertahankan karakteristik tombol tab admin */
+body.admin-mode .tab.admin-only {
+  display: inline-flex !important;
+}
+
+/* Status money value - lebih besar dan bold */
+.sub-status-money {
+  font-size: 13px; /* Diperbesar */
+  font-weight: 800; /* Extra bold */
+  color: var(--primary-dark);
+  display: block;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* Perbaikan kontras untuk status */
+.sub-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.sub-status-item:last-child {
+  border-bottom: none;
+}
+
+.sub-status-name {
+  color: var(--text-soft);
+  font-weight: 700; /* Lebih bold */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px; /* Sedikit lebih besar */
+}
+
+.status-dot {
+  width: 10px; /* Diperbesar */
+  height: 10px; /* Diperbesar */
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.8); /* Border untuk kontras */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Shadow */
+}
+
+.sub-status-count {
+  font-weight: 800; /* Extra bold */
+  color: var(--text);
+  background: var(--bg-alt);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px; /* Sedikit lebih besar */
+  min-width: 70px;
+  text-align: center;
+}
   </style>
 </head>
 
@@ -649,66 +811,86 @@
     }
 
     // BARU: Fungsi renderSubKegiatanStats yang mendukung Pagu per Status
-    function renderSubKegiatanStats(data) {
-      const board = document.getElementById("subKegiatanBoard");
-      if (!data.bySubKegiatan || Object.keys(data.bySubKegiatan).length === 0) {
-        board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); background: var(--card); border-radius: var(--radius-lg); border: 1px dashed var(--line);"><i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>Belum ada data Sub Kegiatan yang tercatat.</div>';
-        return;
+function renderSubKegiatanStats(data) {
+  const board = document.getElementById("subKegiatanBoard");
+  if (!data.bySubKegiatan || Object.keys(data.bySubKegiatan).length === 0) {
+    board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); background: var(--card); border-radius: var(--radius-lg); border: 1px dashed var(--line);"><i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>Belum ada data Sub Kegiatan yang tercatat.</div>';
+    return;
+  }
+
+  const sortedSubs = Object.entries(data.bySubKegiatan).sort((a, b) => b[1].total - a[1].total);
+  
+  // Urutan status yang diinginkan
+  const statusOrder = {
+    'Persiapan': 1,
+    'Pengadaan': 2,
+    'Berkontrak': 3,
+    'Selesai': 4,
+    'Belum Diisi': 99
+  };
+  
+  const statusColors = {
+    'Persiapan': '#f59e0b',
+    'Pengadaan': '#0ea5e9',
+    'Berkontrak': '#8b5cf6',
+    'Selesai': '#10b981',
+    'Belum Diisi': '#94a3b8',
+    'default': '#64748b'
+  };
+
+  board.innerHTML = sortedSubs.map(([subName, subData]) => {
+    // Sort status berdasarkan urutan yang ditentukan
+    const statusEntries = Object.entries(subData.statuses).sort((a, b) => {
+      const orderA = statusOrder[a[0]] || 99;
+      const orderB = statusOrder[b[0]] || 99;
+      return orderA - orderB;
+    });
+    
+    const statusHtml = statusEntries.map(([status, statusData]) => {
+      const color = statusColors[status] || statusColors.default;
+      let count = 0;
+      let pagu = 0;
+      
+      // Mendukung format lama (hanya angka) dan format baru (object {count, pagu})
+      if (typeof statusData === 'object' && statusData !== null) {
+        count = statusData.count || 0;
+        pagu = statusData.pagu || 0;
+      } else {
+        count = statusData || 0;
       }
 
-      const sortedSubs = Object.entries(data.bySubKegiatan).sort((a, b) => b[1].total - a[1].total);
-      const statusColors = { 'Persiapan': '#f59e0b', 'Pengadaan': '#0ea5e9', 'Berkontrak': '#8b5cf6', 'Pelaksanaan': '#3b82f6', 'Selesai': '#10b981', 'Belum Diisi': '#94a3b8', 'default': '#64748b' };
+      // Format rupiah yang lebih jelas
+      const paguText = pagu > 0 ? 
+        `<span class="sub-status-money">${formatRupiah(pagu)}</span>` : '';
 
-      board.innerHTML = sortedSubs.map(([subName, subData]) => {
-        const statusEntries = Object.entries(subData.statuses).sort((a, b) => {
-          const countA = typeof a[1] === 'object' ? a[1].count : a[1];
-          const countB = typeof b[1] === 'object' ? b[1].count : b[1];
-          return countB - countA;
-        });
-        
-        const statusHtml = statusEntries.map(([status, statusData]) => {
-          const color = statusColors[status] || statusColors.default;
-          let count = 0;
-          let pagu = 0;
-          
-          // Mendukung format lama (hanya angka) dan format baru (object {count, pagu})
-          if (typeof statusData === 'object' && statusData !== null) {
-            count = statusData.count || 0;
-            pagu = statusData.pagu || 0;
-          } else {
-            count = statusData || 0;
-          }
-
-          const paguText = pagu > 0 ? `<br><span style="font-size:10px; color:var(--muted); font-weight:600;">${formatRupiah(pagu)}</span>` : '';
-
-          return `
-            <div class="sub-status-item" style="flex-direction: column; align-items: flex-start; gap: 2px;">
-              <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                <span class="sub-status-name">
-                  <span class="status-dot" style="background: ${color};"></span>
-                  ${escapeHtml(status)}
-                </span>
-                <span class="sub-status-count">${count} Paket</span>
-              </div>
-              ${paguText}
-            </div>
-          `;
-        }).join('');
-
-        return `
-          <div class="sub-card">
-            <div class="sub-card-header">
-              <div class="sub-card-name">${escapeHtml(subName)}</div>
-              <div class="sub-card-badge">${subData.total} Kegiatan</div>
-            </div>
-            <div class="sub-card-pagu">${formatRupiah(subData.pagu)}</div>
-            <div class="sub-status-list">
-              ${statusHtml}
-            </div>
+      return `
+        <div class="sub-status-item">
+          <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+            <span class="sub-status-name">
+              <span class="status-dot" style="background: ${color};"></span>
+              ${escapeHtml(status)}
+            </span>
+            <span class="sub-status-count">${count} Paket</span>
           </div>
-        `;
-      }).join('');
-    }
+          ${paguText}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="sub-card">
+        <div class="sub-card-header">
+          <div class="sub-card-name">${escapeHtml(subName)}</div>
+          <div class="sub-card-badge">${subData.total} Kegiatan</div>
+        </div>
+        <div class="sub-card-pagu">${formatRupiah(subData.pagu)}</div>
+        <div class="sub-status-list">
+          ${statusHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
     function formPayload(){
       return {
@@ -792,50 +974,81 @@
 
     // BARU: Fungsi Download CSV
     // BARU: Fungsi Download CSV dengan delimiter titik koma (;) agar rapi di Excel Indonesia
-    function downloadCSV() {
-      if (!allCrudRecords || allCrudRecords.length === 0) {
-        alert("Tidak ada data untuk diunduh.");
-        return;
-      }
-      
-      // Gunakan titik koma (;) sebagai pemisah kolom agar kompatibel dengan Excel setting Indonesia
-      const delimiter = ";"; 
+function downloadCSV() {
+  if (!allCrudRecords || allCrudRecords.length === 0) {
+    alert("Tidak ada data untuk diunduh.");
+    return;
+  }
 
-      const headers = ["No", "Nama Kegiatan", "Sub Kegiatan", "Pagu", "Kecamatan", "Desa", "Sumber Dana", "Asal Usulan", "Status", "Korwil", "Tahap", "Ket Tambahan", "Titik Awal", "Titik Akhir", "Volume Konstruksi", "Foto"];
-      
-      const rows = allCrudRecords.map(r => [
-        r.no, 
-        `"${(r.namaKegiatan || '').replace(/"/g, '""')}"`, 
-        r.subKegiatan, 
-        r.pagu, 
-        r.kecamatan, 
-        r.desa, 
-        r.sumberDana, 
-        r.asalUsulan, 
-        r.status, 
-        r.korwil, 
-        r.tahap, 
-        r.ketTambahan, 
-        r.titikAwal, 
-        r.titikAkhir, 
-        `"${(r.volumeKonstruksi || '').replace(/"/g, '""')}"`, 
-        r.foto
-      ]);
+  const delimiter = ";";
 
-      // Gabungkan header dan baris data menggunakan delimiter titik koma
-      const csvContent = [headers.join(delimiter), ...rows.map(r => r.join(delimiter))].join("\n");
-      
-      // \uFEFF adalah BOM (Byte Order Mark) agar Excel mengenali encoding UTF-8 dengan benar (mencegah karakter aneh)
-      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" }); 
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Data_Kegiatan_Drainase_${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
+  const headers = [
+    "No",
+    "Nama Kegiatan",
+    "Sub Kegiatan",
+    "Pagu",
+    "Kecamatan",
+    "Desa",
+    "Sumber Dana",
+    "Asal Usulan",
+    "Status",
+    "Korwil",
+    "Tahap",
+    "Ket Tambahan",
+    "Titik Awal",
+    "Titik Akhir",
+    "Volume Konstruksi",
+    "Foto"
+  ];
+
+  // Mengamankan seluruh nilai CSV
+  function csvCell(value) {
+    const text = String(value ?? "");
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  const rows = allCrudRecords.map(r => [
+    r.no,
+    r.namaKegiatan,
+    r.subKegiatan,
+    r.pagu,
+    r.kecamatan,
+    r.desa,
+    r.sumberDana,
+    r.asalUsulan,
+    r.status,
+    r.korwil,
+    r.tahap,
+    r.ketTambahan,
+    r.titikAwal,
+    r.titikAkhir,
+    r.volumeKonstruksi,
+    r.foto
+  ]);
+
+  const csvContent = [
+    headers.map(csvCell).join(delimiter),
+    ...rows.map(row => row.map(csvCell).join(delimiter))
+  ].join("\r\n");
+
+  const blob = new Blob(
+    ["\uFEFF" + csvContent],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download =
+    `Data_Kegiatan_Drainase_${new Date().toISOString().slice(0,10)}.csv`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
     async function editRecord(no){
       showLoader(true);
@@ -986,31 +1199,75 @@
       finally{ if(show) showLoader(false); }
     }
 
-    async function downloadKMZ(){
-      const statusEl = document.getElementById("kmzStatus");
-      try{
-        if (!lastMapFeatures.length) {
-          const data = await apiGet("getMapData", { status: val("mapFilterStatus"), kecamatan: val("mapFilterKecamatan"), korwil: val("mapFilterKorwil"), tahap: val("mapFilterTahap") });
-          if (!data.success) throw new Error(data.message || "Gagal mengambil data KMZ.");
-          lastMapFeatures = data.features || [];
-        }
-        if (!lastMapFeatures.length) { if (statusEl) { statusEl.className = "status warn"; statusEl.textContent = "Tidak ada data koordinat valid untuk dibuat KMZ."; } return; }
-        const kml = buildKmlDocument(lastMapFeatures);
-        const filename = buildKmzFilename();
-        if (window.JSZip) {
-          const zip = new JSZip();
-          zip.file("doc.kml", kml);
-          const blob = await zip.generateAsync({ type:"blob", compression:"DEFLATE" });
-          triggerDownload(blob, filename);
-        } else {
-          triggerDownload(new Blob([kml], { type:"application/vnd.google-earth.kml+xml;charset=utf-8" }), filename.replace(/\.kmz$/i, ".kml"));
-        }
-        if (statusEl) { statusEl.className = "status ok"; statusEl.textContent = `KMZ berhasil dibuat dari ${formatNumber(lastMapFeatures.length)} data.`; }
-      }catch(err){
-        console.error(err);
-        if (statusEl) { statusEl.className = "status err"; statusEl.textContent = err.message || "Gagal membuat KMZ."; }
-      }
+ async function downloadKMZ() {
+  const statusEl = document.getElementById("kmzStatus");
+
+  try {
+    statusEl.className = "status warn";
+    statusEl.textContent = "Mengambil data terbaru untuk KMZ...";
+
+    // Selalu mengambil data berdasarkan filter peta aktif
+    const data = await apiGet("getMapData", {
+      status: val("mapFilterStatus"),
+      kecamatan: val("mapFilterKecamatan"),
+      korwil: val("mapFilterKorwil"),
+      tahap: val("mapFilterTahap")
+    });
+
+    if (!data.success) {
+      throw new Error(data.message || "Gagal mengambil data KMZ.");
     }
+
+    lastMapFeatures = data.features || [];
+
+    if (!lastMapFeatures.length) {
+      statusEl.className = "status warn";
+      statusEl.textContent =
+        "Tidak ada data koordinat valid untuk dibuat KMZ.";
+      return;
+    }
+
+    const kml = buildKmlDocument(lastMapFeatures);
+    const filename = buildKmzFilename();
+
+    if (window.JSZip) {
+      const zip = new JSZip();
+
+      zip.file("doc.kml", kml);
+
+      const blob = await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE"
+      });
+
+      triggerDownload(blob, filename);
+
+    } else {
+      const blob = new Blob(
+        [kml],
+        {
+          type: "application/vnd.google-earth.kml+xml;charset=utf-8"
+        }
+      );
+
+      triggerDownload(
+        blob,
+        filename.replace(/\.kmz$/i, ".kml")
+      );
+    }
+
+    statusEl.className = "status ok";
+    statusEl.textContent =
+      `KMZ berhasil dibuat dari ${formatNumber(lastMapFeatures.length)} data.`;
+
+  } catch (err) {
+    console.error(err);
+
+    statusEl.className = "status err";
+    statusEl.textContent =
+      err.message || "Gagal membuat KMZ.";
+  }
+}
 
     function buildKmzFilename(){
       const parts = ["Drainase_2026"];
@@ -1037,10 +1294,48 @@
       return `<Placemark>\n  <name>${kmlEscape("Line Trase - " + (f.no || "") + " - " + (f.namaKegiatan || "Kegiatan"))}</name>\n  <styleUrl>#lineStyle</styleUrl>\n  <description><![CDATA[${kmlDescriptionHtml(f, "Line Trase") }]]></description>\n  <LineString><tessellate>1</tessellate><coordinates>${Number(f.awal.lng)},${Number(f.awal.lat)},0 ${Number(f.akhir.lng)},${Number(f.akhir.lat)},0</coordinates></LineString>\n</Placemark>`;
     }
 
-    function kmlDescriptionHtml(f, tipe){
-      const rows = [["Tipe", tipe], ["No", f.no], ["Nama Kegiatan", f.namaKegiatan], ["Pagu", f.pagu], ["Status", f.status], ["Korwil", f.korwil], ["Tahap", f.tahap], ["Kecamatan", f.kecamatan], ["Desa", f.desa], ["Sumber Dana", f.sumberDana], ["Asal Usulan", f.asalUsulan], ["Sub Kegiatan", f.subKegiatan], ["Volume/Konstruksi", f.volumeKonstruksi], ["Titik Awal", f.titikAwal], ["Titik Akhir", f.titikAkhir], ["Foto", f.fotoUrl ? `<a href="${escapeAttr(f.fotoUrl)}">Buka Foto</a>` : ""]];
-      return `<table style="width:100%; border-collapse:collapse; font-size:12px;">${rows.map(([k,v]) => `<tr><td style="padding:4px 8px; border-bottom:1px solid #eee; font-weight:bold; width:40%;">${escapeHtml(k)}</td><td style="padding:4px 8px; border-bottom:1px solid #eee;">${v || "-"}</td></tr>`).join("")}</table>`;
-    }
+    function kmlDescriptionHtml(f, tipe) {
+  const rows = [
+    ["Tipe", tipe],
+    ["No", f.no],
+    ["Nama Kegiatan", f.namaKegiatan],
+    ["Pagu", f.pagu],
+    ["Status", f.status],
+    ["Korwil", f.korwil],
+    ["Tahap", f.tahap],
+    ["Kecamatan", f.kecamatan],
+    ["Desa", f.desa],
+    ["Sumber Dana", f.sumberDana],
+    ["Asal Usulan", f.asalUsulan],
+    ["Sub Kegiatan", f.subKegiatan],
+    ["Volume/Konstruksi", f.volumeKonstruksi],
+    ["Titik Awal", f.titikAwal],
+    ["Titik Akhir", f.titikAkhir],
+    ["Foto", f.fotoUrl
+      ? `<a href="${escapeAttr(f.fotoUrl)}">Buka Foto</a>`
+      : "-"]
+  ];
+
+  const html = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      ${rows.map(([k, v]) => `
+        <tr>
+          <td style="padding:4px 8px;border-bottom:1px solid #eee;font-weight:bold;width:40%;">
+            ${escapeHtml(k)}
+          </td>
+          <td style="padding:4px 8px;border-bottom:1px solid #eee;">
+            ${k === "Foto" && f.fotoUrl
+              ? `<a href="${escapeAttr(f.fotoUrl)}">Buka Foto</a>`
+              : escapeHtml(v || "-")}
+          </td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+
+  // Menghindari penutupan CDATA oleh karakter dari data pengguna
+  return html.replace(/]]>/g, "]]]]><![CDATA[>");
+}
 
     function triggerDownload(blob, filename){
       const url = URL.createObjectURL(blob);
